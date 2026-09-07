@@ -16,4 +16,15 @@ class ExampleTest extends TestCase
 
         $response->assertRedirect('/login');
     }
+
+    public function test_assetlinks_json_is_accessible_and_valid(): void
+    {
+        $response = $this->get('/.well-known/assetlinks.json');
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/json');
+        $data = $response->json();
+        $this->assertIsArray($data);
+        $this->assertEquals('br.com.adteotoniovilela.cadernetaebd', $data[0]['target']['package_name']);
+    }
 }

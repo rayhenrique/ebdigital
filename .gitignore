@@ -22,3 +22,12 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Android signing keys and store packages
+*.keystore
+*.jks
+signing-key-info.txt
+*.aab
+*.apk
+/referencia/*package*
+

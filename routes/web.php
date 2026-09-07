@@ -16,6 +16,18 @@ Route::get('/', function () {
     return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
 
+// Digital Asset Links for Android TWA verification
+Route::get('/.well-known/assetlinks.json', function () {
+    $path = public_path('.well-known/assetlinks.json');
+    if (file_exists($path)) {
+        return response(file_get_contents($path), 200, [
+            'Content-Type' => 'application/json',
+            'Cache-Control' => 'max-age=86400, public',
+        ]);
+    }
+    abort(404);
+});
+
 // Central Dashboard Redirection by Role
 Route::get('/dashboard', function () {
     return redirect(AuthenticatedSessionController::redirectPathForUser(Auth::user()));

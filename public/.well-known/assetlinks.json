@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "br.com.adteotoniovilela.cadernetaebd",
+        "sha256_cert_fingerprints": ["F5:08:1D:EA:78:06:38:AC:68:4A:98:B1:42:8C:AE:92:E3:80:51:A6:BF:0C:E8:E4:8C:6C:B9:FC:F3:E4:48:62"]
+      }
+    }]
