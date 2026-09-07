@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<html lang="pt-BR" class="h-full notranslate" translate="no">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta http-equiv="content-language" content="pt-BR">
+        <meta name="google" content="notranslate">
 
         <title>{{ config('app.name', 'Caderneta EBD Digital') }}</title>
 

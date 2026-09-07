@@ -2,6 +2,8 @@
   "name": "Caderneta EBD Online",
   "short_name": "Caderneta EBD",
   "description": "Sistema de Gestão e Caderneta da Escola Bíblica Dominical",
+  "lang": "pt-BR",
+  "dir": "ltr",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
