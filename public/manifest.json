@@ -8,9 +8,21 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "window-controls-overlay"
+  ],
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
   "orientation": "portrait",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope_extensions": [
+    {
+      "origin": "https://ebd.adteotoniovilela.com.br"
+    }
+  ],
   "categories": [
     "education",
     "lifestyle",
