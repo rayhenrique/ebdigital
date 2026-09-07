@@ -4,7 +4,7 @@
         <div class="flex items-center justify-between h-16 gap-4">
             <!-- 1. Bloco Esquerda: Brand / Logo -->
             <div class="shrink-0 flex items-center">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
+                <a href="{{ route('dashboard') }}" wire:navigate.hover class="flex items-center gap-3 group">
                     <img 
                         src="{{ asset('images/logo-ad-transparent.png') }}" 
                         alt="Logo Assembleia de Deus" 
@@ -142,7 +142,7 @@
                             <p class="text-xs font-bold text-slate-800 truncate">{{ Auth::user()->email }}</p>
                         </div>
 
-                        <x-dropdown-link :href="route('profile.edit')" class="flex items-center gap-2 text-slate-700 hover:text-blue-600">
+                        <x-dropdown-link :href="route('profile.edit')" wire:navigate class="flex items-center gap-2 text-slate-700 hover:text-blue-600">
                             <svg class="w-4 h-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                             </svg>
@@ -174,7 +174,7 @@
                 </span>
 
                 <!-- Avatar Circle Mobile -->
-                <a href="{{ route('profile.edit') }}" class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+                <a href="{{ route('profile.edit') }}" wire:navigate class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </a>
 
@@ -328,6 +328,7 @@
         @endphp
         <a 
             href="{{ Auth::user()->isProfessor() ? route('chamada.index') : route('secretaria.dashboard') }}" 
+            wire:navigate
             class="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[11px] font-medium transition-colors min-h-[48px] {{ $isDashboard ? 'text-blue-600 font-bold bg-blue-50/70' : 'text-slate-500 hover:text-slate-800' }}"
         >
             <svg class="w-5 h-5 mb-0.5 {{ $isDashboard ? 'text-blue-600 stroke-[2.2]' : 'text-slate-400' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
@@ -342,6 +343,7 @@
         @endphp
         <a 
             href="{{ route('chamada.index') }}" 
+            wire:navigate
             class="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[11px] font-medium transition-colors min-h-[48px] {{ $isChamada ? 'text-blue-600 font-bold bg-blue-50/70' : 'text-slate-500 hover:text-slate-800' }}"
         >
             <svg class="w-5 h-5 mb-0.5 {{ $isChamada ? 'text-blue-600 stroke-[2.2]' : 'text-slate-400' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
@@ -357,6 +359,7 @@
         @endphp
         <a 
             href="{{ $alunosTarget }}" 
+            wire:navigate
             class="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[11px] font-medium transition-colors min-h-[48px] {{ $isAlunos ? 'text-blue-600 font-bold bg-blue-50/70' : 'text-slate-500 hover:text-slate-800' }}"
         >
             <svg class="w-5 h-5 mb-0.5 {{ $isAlunos ? 'text-blue-600 stroke-[2.2]' : 'text-slate-400' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
@@ -371,6 +374,7 @@
         @endphp
         <a 
             href="{{ route('profile.edit') }}" 
+            wire:navigate
             class="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[11px] font-medium transition-colors min-h-[48px] {{ $isPerfil ? 'text-blue-600 font-bold bg-blue-50/70' : 'text-slate-500 hover:text-slate-800' }}"
         >
             <svg class="w-5 h-5 mb-0.5 {{ $isPerfil ? 'text-blue-600 stroke-[2.2]' : 'text-slate-400' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">

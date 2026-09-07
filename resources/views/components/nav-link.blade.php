@@ -6,6 +6,6 @@ $classes = ($active ?? false)
             : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50 font-medium px-3 py-2 rounded-xl inline-flex items-center gap-2 text-sm transition-all';
 @endphp
 
-<a {{ $attributes->merge(['class' => $classes]) }}>
+<a wire:navigate.hover {{ $attributes->merge(['class' => $classes]) }}>
     {{ $slot }}
 </a>

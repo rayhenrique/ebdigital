@@ -21,6 +21,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="Caderneta EBD">
+        <meta name="view-transition" content="same-origin">
 
         <script>
           if ('serviceWorker' in navigator) {
@@ -35,6 +36,9 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased bg-slate-50 text-slate-800 selection:bg-blue-600 selection:text-white">
+        <!-- Barra de Progresso Superior de Navegação (Feedback Instantâneo) -->
+        <div id="ebd-progress-bar" class="fixed top-0 left-0 right-0 h-[3px] z-[99999] pointer-events-none transition-all duration-300 opacity-0 -translate-y-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 shadow-[0_0_12px_rgba(37,99,235,0.8)]" style="width: 0%;"></div>
+
         <div class="min-h-screen flex flex-col">
             @include('layouts.navigation')
 
@@ -53,5 +57,37 @@
             </main>
         </div>
         @livewireScripts
+
+        <!-- Script de Controle da Barra de Progresso em Navegações wire:navigate -->
+        <script>
+            document.addEventListener('livewire:navigating', () => {
+                const bar = document.getElementById('ebd-progress-bar');
+                if (bar) {
+                    bar.style.transition = 'none';
+                    bar.style.width = '0%';
+                    bar.classList.remove('opacity-0', '-translate-y-full');
+                    bar.style.opacity = '1';
+                    setTimeout(() => {
+                        bar.style.transition = 'width 300ms cubic-bezier(0.4, 0, 0.2, 1)';
+                        bar.style.width = '75%';
+                    }, 10);
+                }
+            });
+
+            document.addEventListener('livewire:navigated', () => {
+                const bar = document.getElementById('ebd-progress-bar');
+                if (bar) {
+                    bar.style.transition = 'width 120ms ease-in';
+                    bar.style.width = '100%';
+                    setTimeout(() => {
+                        bar.style.opacity = '0';
+                        setTimeout(() => {
+                            bar.classList.add('-translate-y-full');
+                            bar.style.width = '0%';
+                        }, 200);
+                    }, 150);
+                }
+            });
+        </script>
     </body>
 </html>
