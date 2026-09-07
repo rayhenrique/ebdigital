@@ -22,5 +22,42 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshoot/01_login_mobile.png",
+      "sizes": "628x985",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tela de Login Mobile"
+    },
+    {
+      "src": "/screenshoot/02_dashboard_mobile.png",
+      "sizes": "628x985",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Painel Consolidado Geral da EBD"
+    },
+    {
+      "src": "/screenshoot/03_classes_mobile.png",
+      "sizes": "628x985",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Minhas Classes e Turmas"
+    },
+    {
+      "src": "/screenshoot/04_chamada_mobile.png",
+      "sizes": "628x985",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Lançamento de Chamada e Presença"
+    },
+    {
+      "src": "/screenshoot/05_dashboard_desktop.png",
+      "sizes": "1584x884",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Visão Consolidada no Computador"
+    }
   ]
 }
