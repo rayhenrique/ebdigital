@@ -17,12 +17,25 @@
   "theme_color": "#2563eb",
   "orientation": "portrait",
   "prefer_related_applications": false,
-  "related_applications": [],
-  "scope_extensions": [
+  "related_applications": [
     {
-      "origin": "https://ebd.adteotoniovilela.com.br"
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=br.com.adteotoniovilela.cadernetaebd",
+      "id": "br.com.adteotoniovilela.cadernetaebd"
     }
   ],
+  "scope_extensions": [
+    {
+      "origin": "https://adteotoniovilela.com.br"
+    },
+    {
+      "origin": "https://ebd.adteotoniovilela.com.br"
+    },
+    {
+      "origin": "*.adteotoniovilela.com.br"
+    }
+  ],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ec4e53b7",
   "categories": [
     "education",
     "lifestyle",
