@@ -62,6 +62,9 @@ class StudentController extends Controller
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active', true);
 
+        $class = EbdClass::findOrFail($validated['class_id']);
+        $validated['congregation_id'] = $class->congregation_id;
+
         $student = Student::create($validated);
 
         AuditService::log(
@@ -69,7 +72,7 @@ class StudentController extends Controller
             Student::class,
             $student->id,
             null,
-            ['name' => $student->name, 'class_id' => $student->class_id]
+            ['name' => $student->name, 'class_id' => $student->class_id, 'congregation_id' => $student->congregation_id]
         );
 
         return redirect()->route('alunos.index')->with('success', "Aluno {$student->name} cadastrado com sucesso!");
@@ -90,6 +93,11 @@ class StudentController extends Controller
     {
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active');
+
+        if (isset($validated['class_id'])) {
+            $class = EbdClass::findOrFail($validated['class_id']);
+            $validated['congregation_id'] = $class->congregation_id;
+        }
 
         $beforeBirthDate = $aluno->birth_date ? Carbon::parse($aluno->birth_date)->format('Y-m-d') : null;
 

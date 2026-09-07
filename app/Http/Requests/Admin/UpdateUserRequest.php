@@ -24,6 +24,7 @@ class UpdateUserRequest extends FormRequest
         $userId = $this->route('user')?->id ?? $this->route('user');
 
         return [
+            'congregation_id' => ['nullable', 'integer', 'exists:congregations,id'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:191', Rule::unique('users', 'email')->ignore($userId)],
             'password' => ['nullable', 'string', Password::defaults()],

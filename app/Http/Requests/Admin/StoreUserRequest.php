@@ -22,6 +22,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'congregation_id' => ['nullable', 'integer', 'exists:congregations,id'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:191', 'unique:users,email'],
             'password' => ['required', 'string', Password::defaults()],

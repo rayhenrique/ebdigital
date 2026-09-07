@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
+use App\Models\Congregation;
 use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
@@ -22,7 +23,7 @@ class UserController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = User::query()->orderBy('name');
+        $query = User::with('congregation')->orderBy('name');
 
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
@@ -36,6 +37,10 @@ class UserController extends Controller
             $query->where('role', $request->input('role'));
         }
 
+        if ($request->filled('congregation_id')) {
+            $query->where('congregation_id', $request->input('congregation_id'));
+        }
+
         if ($request->filled('status')) {
             $status = $request->input('status') === 'active';
             $query->where('is_active', $status);
@@ -46,6 +51,7 @@ class UserController extends Controller
         return view('admin.users.index', [
             'users' => $users,
             'roles' => UserRole::cases(),
+            'congregations' => Congregation::active()->orderBy('name')->get(),
         ]);
     }
 
@@ -53,6 +59,7 @@ class UserController extends Controller
     {
         return view('admin.users.create', [
             'roles' => UserRole::cases(),
+            'congregations' => Congregation::active()->orderBy('name')->get(),
         ]);
     }
 
@@ -61,6 +68,7 @@ class UserController extends Controller
         $validated = $request->validated();
         $validated['password'] = Hash::make($validated['password']);
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['congregation_id'] = !empty($validated['congregation_id']) ? (int) $validated['congregation_id'] : null;
 
         $user = User::create($validated);
 
@@ -69,7 +77,7 @@ class UserController extends Controller
             User::class,
             $user->id,
             null,
-            ['name' => $user->name, 'email' => $user->email, 'role' => $user->role->value]
+            ['name' => $user->name, 'email' => $user->email, 'role' => $user->role->value, 'congregation_id' => $user->congregation_id]
         );
 
         return redirect()->route('admin.users.index')->with('success', "Usuário {$user->name} cadastrado com sucesso!");
@@ -80,6 +88,7 @@ class UserController extends Controller
         return view('admin.users.edit', [
             'user' => $user,
             'roles' => UserRole::cases(),
+            'congregations' => Congregation::active()->orderBy('name')->get(),
         ]);
     }
 
@@ -95,6 +104,7 @@ class UserController extends Controller
         }
 
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['congregation_id'] = !empty($validated['congregation_id']) ? (int) $validated['congregation_id'] : null;
         $user->update($validated);
 
         AuditService::log(
@@ -102,7 +112,7 @@ class UserController extends Controller
             User::class,
             $user->id,
             $before,
-            ['name' => $user->name, 'email' => $user->email, 'role' => $user->role->value, 'is_active' => $user->is_active]
+            ['name' => $user->name, 'email' => $user->email, 'role' => $user->role->value, 'is_active' => $user->is_active, 'congregation_id' => $user->congregation_id]
         );
 
         return redirect()->route('admin.users.index')->with('success', "Usuário {$user->name} atualizado com sucesso!");

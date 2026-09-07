@@ -58,6 +58,14 @@ class TakeAttendance extends Component
         $user = Auth::user();
         $class = EbdClass::findOrFail($this->classId);
 
+        // Se for secretário, validar congregação
+        if ($user->isSecretario()) {
+            $userCongregation = $user->congregation_id ?? 1;
+            if ($class->congregation_id !== $userCongregation) {
+                abort(403, 'Você não possui permissão para acessar a chamada de uma turma de outra congregação.');
+            }
+        }
+
         // If professor, verify assignment
         if ($user->isProfessor()) {
             $isAssigned = $user->teachingClasses()->where('classes.id', $this->classId)->exists();
@@ -218,7 +226,9 @@ class TakeAttendance extends Component
 
             if (!$record) {
                 $isNew = true;
+                $class = EbdClass::findOrFail($this->classId);
                 $record = new LessonRecord();
+                $record->congregation_id = $class->congregation_id;
                 $record->class_id = $this->classId;
                 $record->lesson_date = Carbon::parse($this->lessonDate)->format('Y-m-d');
                 $record->registered_by = $user->id;

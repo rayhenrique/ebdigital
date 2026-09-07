@@ -52,6 +52,11 @@ class AttendanceController extends Controller
             if (!$teaches) {
                 abort(403, 'Você não leciona nesta classe.');
             }
+        } elseif ($user->isSecretario()) {
+            $userCongregation = $user->congregation_id ?? 1;
+            if ($class->congregation_id !== $userCongregation) {
+                abort(403, 'Você não possui permissão para acessar a chamada de outra congregação.');
+            }
         }
 
         $date = $request->input('date', now()->format('Y-m-d'));

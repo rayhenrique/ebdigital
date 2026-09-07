@@ -45,6 +45,7 @@ class AuditLog extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'congregation_id',
         'user_id',
         'action',
         'auditable_type',
@@ -76,5 +77,13 @@ class AuditLog extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Congregação vinculada ao log de auditoria.
+     */
+    public function congregation(): BelongsTo
+    {
+        return $this->belongsTo(Congregation::class, 'congregation_id');
     }
 }

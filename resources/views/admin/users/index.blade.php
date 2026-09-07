@@ -43,7 +43,7 @@
 
             <!-- Filtros -->
             <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm mb-6">
-                <form method="GET" action="{{ route('admin.users.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <form method="GET" action="{{ route('admin.users.index') }}" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
                     <div class="sm:col-span-2">
                         <input 
                             type="text" 
@@ -63,11 +63,21 @@
                             @endforeach
                         </select>
                     </div>
+                    <div>
+                        <select name="congregation_id" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 min-h-[48px] px-3">
+                            <option value="">Todas Congregações</option>
+                            @foreach($congregations as $c)
+                                <option value="{{ $c->id }}" {{ request('congregation_id') == $c->id ? 'selected' : '' }}>
+                                    {{ $c->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="flex gap-2">
                         <button type="submit" class="flex-1 px-5 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 min-h-[48px] cursor-pointer">
                             Filtrar
                         </button>
-                        @if(request()->hasAny(['search', 'role']))
+                        @if(request()->hasAny(['search', 'role', 'congregation_id']))
                             <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200 flex items-center justify-center min-h-[48px]">
                                 Limpar
                             </a>
@@ -158,6 +168,7 @@
                             <tr>
                                 <th class="px-6 py-4">Nome / E-mail</th>
                                 <th class="px-4 py-4 text-center">Perfil</th>
+                                <th class="px-4 py-4">Congregação</th>
                                 <th class="px-4 py-4 text-center">Status</th>
                                 <th class="px-6 py-4 text-right">Ações</th>
                             </tr>
@@ -174,6 +185,18 @@
                                             {{ $u->role->value === 'admin' ? 'bg-purple-50 text-purple-700 border border-purple-200/80' : ($u->role->value === 'secretario' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80' : 'bg-blue-50 text-blue-700 border border-blue-200/80') }}">
                                             {{ $u->role->label() }}
                                         </span>
+                                    </td>
+                                    <td class="px-4 py-4 text-xs text-slate-600 font-medium">
+                                        @if($u->congregation)
+                                            <span class="inline-flex items-center gap-1">
+                                                {{ $u->congregation->name }}
+                                                @if($u->congregation->is_headquarters)
+                                                    <span class="text-[10px] text-amber-600">🏛️</span>
+                                                @endif
+                                            </span>
+                                        @else
+                                            <span class="text-slate-400 italic">Geral (Todas)</span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-4 text-center">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $u->is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200' }}">

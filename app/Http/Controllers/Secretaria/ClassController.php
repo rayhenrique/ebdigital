@@ -41,10 +41,18 @@ class ClassController extends Controller
 
     public function create(): View
     {
-        $teachers = User::where('role', UserRole::PROFESSOR)
+        $tenantService = app(\App\Services\TenantService::class);
+        $congregationId = $tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
+
+        $teachersQuery = User::where('role', UserRole::PROFESSOR)
             ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+            ->orderBy('name');
+
+        if ($congregationId) {
+            $teachersQuery->where('congregation_id', $congregationId);
+        }
+
+        $teachers = $teachersQuery->get();
 
         return view('secretaria.classes.create', [
             'teachers' => $teachers,
@@ -85,10 +93,16 @@ class ClassController extends Controller
     public function edit(EbdClass $class): View
     {
         $class->load('teachers');
-        $teachers = User::where('role', UserRole::PROFESSOR)
+
+        $teachersQuery = User::where('role', UserRole::PROFESSOR)
             ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+            ->orderBy('name');
+
+        if ($class->congregation_id) {
+            $teachersQuery->where('congregation_id', $class->congregation_id);
+        }
+
+        $teachers = $teachersQuery->get();
 
         return view('secretaria.classes.edit', [
             'class' => $class,

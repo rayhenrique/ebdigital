@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\BelongsToCongregation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property int $congregation_id
  * @property int $class_id
  * @property string $name
  * @property string|null $phone
@@ -20,12 +22,13 @@ use Illuminate\Support\Carbon;
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Congregation $congregation
  * @property-read EbdClass $ebdClass
  * @property-read \Illuminate\Database\Eloquent\Collection<int, LessonAttendance> $attendances
  */
 class Student extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToCongregation;
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +36,7 @@ class Student extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'congregation_id',
         'class_id',
         'name',
         'phone',

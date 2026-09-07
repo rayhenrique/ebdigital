@@ -12,6 +12,7 @@ use App\Models\LessonRecord;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use App\Models\Congregation;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -21,8 +22,32 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 0. Criar Congregações
+        $sede = Congregation::firstOrCreate(
+            ['slug' => 'templo-sede'],
+            [
+                'name' => 'Templo Sede',
+                'pastor_dirigente' => 'Pastor Presidente',
+                'city' => 'Maceió',
+                'is_headquarters' => true,
+                'is_active' => true,
+            ]
+        );
+
+        $canaa = Congregation::firstOrCreate(
+            ['slug' => 'congregacao-canaa'],
+            [
+                'name' => 'Congregação Canaã',
+                'pastor_dirigente' => 'Ev. Marcos Antônio',
+                'city' => 'Maceió',
+                'is_headquarters' => false,
+                'is_active' => true,
+            ]
+        );
+
         // 1. Criar Usuários
         $admin = User::create([
+            'congregation_id' => null, // Admin Geral tem acesso a todas
             'name' => 'Pastor / Administrador',
             'email' => 'admin@ebd.local',
             'password' => Hash::make('senha123'),
@@ -31,7 +56,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $secretario = User::create([
-            'name' => 'Superintendente / Secretaria',
+            'congregation_id' => $sede->id,
+            'name' => 'Superintendente / Secretaria Sede',
             'email' => 'secretario@ebd.local',
             'password' => Hash::make('senha123'),
             'role' => UserRole::SECRETARIO,
@@ -39,6 +65,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $prof1 = User::create([
+            'congregation_id' => $sede->id,
             'name' => 'Prof. Barnabé Silva',
             'email' => 'professor1@ebd.local',
             'password' => Hash::make('senha123'),
@@ -47,6 +74,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $prof2 = User::create([
+            'congregation_id' => $sede->id,
             'name' => 'Profª. Débora Oliveira',
             'email' => 'professor2@ebd.local',
             'password' => Hash::make('senha123'),

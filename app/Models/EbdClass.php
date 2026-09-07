@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\BelongsToCongregation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
+ * @property int $congregation_id
  * @property string $name
  * @property string|null $description
  * @property bool $is_active
@@ -27,7 +29,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class EbdClass extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToCongregation;
 
     /**
      * The table associated with the model.
@@ -42,6 +44,7 @@ class EbdClass extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'congregation_id',
         'name',
         'description',
         'is_active',

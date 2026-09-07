@@ -72,6 +72,23 @@
                             <x-input-error :messages="$errors->get('role')" class="mt-1" />
                         </div>
 
+                        <div>
+                            <label for="congregation_id" class="block text-xs font-semibold text-gray-700 mb-1">Congregação Vinculada</label>
+                            <select 
+                                id="congregation_id" 
+                                name="congregation_id" 
+                                class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 min-h-[48px]"
+                            >
+                                <option value="">Geral / Todas as Congregações (Apenas Admins / Liderança Geral)</option>
+                                @foreach($congregations as $c)
+                                    <option value="{{ $c->id }}" {{ old('congregation_id', 1) == $c->id ? 'selected' : '' }}>
+                                        {{ $c->name }} {{ $c->is_headquarters ? '(Sede)' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('congregation_id')" class="mt-1" />
+                        </div>
+
                         <div class="flex items-center gap-2 pt-2">
                             <input 
                                 type="checkbox" 

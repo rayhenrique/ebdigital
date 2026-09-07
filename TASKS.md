@@ -51,3 +51,13 @@
 - [x] 8.5 Relatório de Aniversariantes do mês com cálculo de idade e botão de felicitação direta via WhatsApp.
 - [x] 8.6 Layout de Impressão Oficial A4/PDF (`@media print`) com timbre da Assembleia de Deus e campos de assinatura (Pastor e Superintendente).
 - [x] 8.7 Testes automatizados cobrindo acesso, cálculo de métricas, atalhos de data e aniversariantes (`ReportsTest`).
+
+## Fase 9: Refatoração Multi-Tenant (Congregações)
+- [x] 9.1 Migrations: criação da tabela `congregations` e adição de `congregation_id` com chaves estrangeiras em `users`, `classes`, `students`, `lesson_records` e `audit_logs`.
+- [x] 9.2 Models & Global Scopes: Model `Congregation`, serviço `TenantService`, escopo global `CongregationScope` e Trait `BelongsToCongregation` com preenchimento automático.
+- [x] 9.3 Gestão de Congregações: Controller `CongregationController`, Form Requests, rotas `/admin/congregacoes` e views Blade (Index, Create, Edit).
+- [x] 9.4 Alternador de Contexto (Tenant Switcher): Dropdown interativo na Sidebar desktop e Gaveta mobile para o Admin alternar entre "Todas as Congregações" ou congregações específicas em tempo real via sessão.
+- [x] 9.5 Módulo de Gestão de Professores: Controller `TeacherController`, Form Requests, rotas `/professores` e views Blade permitindo ao Secretário/Superintendente cadastrar, editar, ativar/inativar e resetar senha dos professores da sua própria congregação com isolamento total.
+- [x] 9.6 Atualização dos Módulos Existentes: Escopo aplicado em Usuários, Classes, Alunos, Chamada (`TakeAttendance`), Dashboard e Relatórios (`EbdReports`).
+- [x] 9.7 Seeders & Testes Automatizados: Migração inicial e testes no `MultiTenantTest` garantindo 100% de cobertura e integridade (55 testes passando).
+

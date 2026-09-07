@@ -28,7 +28,11 @@ class AuditService
         ?array $payloadAfter = null,
         ?int $userId = null
     ): AuditLog {
+        $tenantService = app(TenantService::class);
+        $congregationId = $tenantService->getCongregationId() ?? Auth::user()?->congregation_id ?? 1;
+
         return AuditLog::create([
+            'congregation_id' => $congregationId,
             'user_id' => $userId ?? Auth::id(),
             'action' => $action,
             'auditable_type' => $auditableType,

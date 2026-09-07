@@ -1,0 +1,265 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature;
+
+use App\Enums\UserRole;
+use App\Models\Congregation;
+use App\Models\EbdClass;
+use App\Models\LessonRecord;
+use App\Models\Student;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class MultiTenantTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_tenant_data_isolation_between_congregations(): void
+    {
+        $sede = Congregation::where('is_headquarters', true)->first() ?? Congregation::create([
+            'name' => 'Templo Sede',
+            'slug' => 'templo-sede-teste',
+            'is_headquarters' => true,
+            'is_active' => true,
+        ]);
+
+        $canaa = Congregation::create([
+            'name' => 'Congregação Canaã',
+            'slug' => 'congregacao-canaa-teste',
+            'is_headquarters' => false,
+            'is_active' => true,
+        ]);
+
+        $secSede = User::factory()->create([
+            'congregation_id' => $sede->id,
+            'role' => UserRole::SECRETARIO,
+            'is_active' => true,
+        ]);
+
+        $secCanaa = User::factory()->create([
+            'congregation_id' => $canaa->id,
+            'role' => UserRole::SECRETARIO,
+            'is_active' => true,
+        ]);
+
+        $classSede = EbdClass::create([
+            'congregation_id' => $sede->id,
+            'name' => 'Turma Adultos Sede',
+            'is_active' => true,
+        ]);
+
+        $classCanaa = EbdClass::create([
+            'congregation_id' => $canaa->id,
+            'name' => 'Turma Adultos Canaã',
+            'is_active' => true,
+        ]);
+
+        // Secretário da Sede vê apenas a turma da Sede
+        $this->actingAs($secSede);
+        $this->assertEquals(1, EbdClass::count());
+        $this->assertEquals('Turma Adultos Sede', EbdClass::first()->name);
+
+        $responseSede = $this->get(route('classes.index'));
+        $responseSede->assertSee('Turma Adultos Sede');
+        $responseSede->assertDontSee('Turma Adultos Canaã');
+
+        // Tentativa do Secretário da Sede de acessar a turma de Canaã resulta em 404 (oculto pelo escopo global)
+        $responseForbidden = $this->get(route('classes.edit', $classCanaa));
+        $responseForbidden->assertNotFound();
+
+        // Secretário de Canaã vê apenas a turma de Canaã
+        $this->actingAs($secCanaa);
+        $this->assertEquals(1, EbdClass::count());
+        $this->assertEquals('Turma Adultos Canaã', EbdClass::first()->name);
+
+        $responseCanaa = $this->get(route('classes.index'));
+        $responseCanaa->assertSee('Turma Adultos Canaã');
+        $responseCanaa->assertDontSee('Turma Adultos Sede');
+    }
+
+    public function test_admin_can_view_all_or_switch_congregation_context(): void
+    {
+        $sede = Congregation::where('is_headquarters', true)->first() ?? Congregation::create([
+            'name' => 'Sede',
+            'slug' => 'sede-admin-teste',
+            'is_headquarters' => true
+        ]);
+
+        $canaa = Congregation::create([
+            'name' => 'Canaã',
+            'slug' => 'canaa-admin-teste',
+            'is_headquarters' => false
+        ]);
+
+        $admin = User::factory()->create([
+            'role' => UserRole::ADMIN,
+            'congregation_id' => null,
+            'is_active' => true,
+        ]);
+
+        EbdClass::create(['congregation_id' => $sede->id, 'name' => 'Classe Sede', 'is_active' => true]);
+        EbdClass::create(['congregation_id' => $canaa->id, 'name' => 'Classe Canaã', 'is_active' => true]);
+
+        // Sem seleção na sessão, Admin vê todas as classes
+        $this->actingAs($admin);
+        $this->assertEquals(2, EbdClass::count());
+
+        // Admin seleciona congregação Canaã
+        $response = $this->post(route('admin.congregacoes.switch'), [
+            'congregation_id' => $canaa->id,
+        ]);
+        $response->assertRedirect();
+        $response->assertSessionHas('selected_congregation_id', $canaa->id);
+
+        $this->assertEquals(1, EbdClass::count());
+        $this->assertEquals('Classe Canaã', EbdClass::first()->name);
+
+        // Admin volta para "todas as congregações"
+        $this->post(route('admin.congregacoes.switch'), [
+            'congregation_id' => 'all',
+        ]);
+        $this->assertEquals(2, EbdClass::count());
+    }
+
+    public function test_secretario_can_manage_teachers_only_for_own_congregation(): void
+    {
+        $sede = Congregation::where('is_headquarters', true)->first() ?? Congregation::create([
+            'name' => 'Templo Sede',
+            'slug' => 'sede-prof-teste',
+            'is_headquarters' => true
+        ]);
+
+        $secSede = User::factory()->create([
+            'congregation_id' => $sede->id,
+            'role' => UserRole::SECRETARIO,
+            'is_active' => true,
+        ]);
+
+        $class = EbdClass::create([
+            'congregation_id' => $sede->id,
+            'name' => 'Classe Jovens Sede',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($secSede);
+
+        // Criar novo professor
+        $response = $this->post(route('professores.store'), [
+            'name' => 'Novo Professor da Sede',
+            'email' => 'prof.novo@ebd.local',
+            'password' => 'senha123',
+            'phone' => '82999990000',
+            'class_ids' => [$class->id],
+            'is_active' => true,
+        ]);
+
+        $response->assertRedirect(route('professores.index'));
+
+        $teacher = User::where('email', 'prof.novo@ebd.local')->first();
+        $this->assertNotNull($teacher);
+        $this->assertEquals(UserRole::PROFESSOR, $teacher->role);
+        $this->assertEquals($sede->id, $teacher->congregation_id);
+        $this->assertTrue($teacher->teachingClasses->contains($class->id));
+    }
+
+    public function test_secretario_cannot_edit_teacher_from_another_congregation(): void
+    {
+        $sede = Congregation::where('is_headquarters', true)->first() ?? Congregation::create([
+            'name' => 'Templo Sede',
+            'slug' => 'sede-edit-teste',
+            'is_headquarters' => true
+        ]);
+
+        $canaa = Congregation::create([
+            'name' => 'Canaã',
+            'slug' => 'canaa-edit-teste',
+            'is_headquarters' => false
+        ]);
+
+        $secSede = User::factory()->create([
+            'congregation_id' => $sede->id,
+            'role' => UserRole::SECRETARIO,
+        ]);
+
+        $profCanaa = User::factory()->create([
+            'congregation_id' => $canaa->id,
+            'role' => UserRole::PROFESSOR,
+        ]);
+
+        $this->actingAs($secSede);
+
+        $response = $this->get(route('professores.edit', $profCanaa));
+        $response->assertForbidden();
+
+        $responseUpdate = $this->put(route('professores.update', $profCanaa), [
+            'name' => 'Hacked Name',
+            'email' => $profCanaa->email,
+        ]);
+        $responseUpdate->assertForbidden();
+    }
+
+    public function test_admin_can_manage_congregations_crud(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+        $sec = User::factory()->create(['role' => UserRole::SECRETARIO]);
+
+        // Não admin recebe 403
+        $this->actingAs($sec)->get(route('admin.congregacoes.index'))->assertForbidden();
+
+        // Admin acessa e cadastra congregação
+        $this->actingAs($admin);
+        $response = $this->post(route('admin.congregacoes.store'), [
+            'name' => 'Congregação Betel',
+            'pastor_dirigente' => 'Ev. Lucas Ribeiro',
+            'city' => 'Maceió',
+            'is_active' => true,
+        ]);
+
+        $response->assertRedirect(route('admin.congregacoes.index'));
+
+        $betel = Congregation::where('name', 'Congregação Betel')->first();
+        $this->assertNotNull($betel);
+        $this->assertEquals('congregacao-betel', $betel->slug);
+
+        // Alternar status
+        $this->patch(route('admin.congregacoes.toggle', $betel));
+        $this->assertFalse($betel->fresh()->is_active);
+    }
+
+    public function test_lesson_record_saves_with_correct_congregation(): void
+    {
+        $canaa = Congregation::create([
+            'name' => 'Canaã',
+            'slug' => 'canaa-record-teste',
+            'is_headquarters' => false
+        ]);
+
+        $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+
+        $class = EbdClass::create([
+            'congregation_id' => $canaa->id,
+            'name' => 'Classe Canaã',
+            'is_active' => true,
+        ]);
+
+        $student = Student::create([
+            'congregation_id' => $canaa->id,
+            'class_id' => $class->id,
+            'name' => 'Aluno de Canaã',
+            'is_active' => true,
+        ]);
+
+        $record = LessonRecord::create([
+            'congregation_id' => $canaa->id,
+            'class_id' => $class->id,
+            'registered_by' => $admin->id,
+            'lesson_date' => now()->format('Y-m-d'),
+            'visitors_count' => 2,
+        ]);
+
+        $this->assertEquals($canaa->id, $record->fresh()->congregation_id);
+    }
+}

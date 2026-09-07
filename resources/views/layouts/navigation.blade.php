@@ -41,6 +41,56 @@
             </div>
         </div>
 
+        @php
+            $tenantService = app(\App\Services\TenantService::class);
+            $availableCongregations = $tenantService->getAvailableCongregations();
+            $isAllCongregations = $tenantService->isAllCongregations();
+            $activeCongregationId = $tenantService->getCongregationId();
+        @endphp
+
+        <!-- Seletor / Indicador de Congregação -->
+        @if(Auth::user()->isAdmin())
+            <div class="px-1">
+                <form method="POST" action="{{ route('admin.congregacoes.switch') }}">
+                    @csrf
+                    <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 shadow-2xs">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                                Congregação Ativa
+                            </span>
+                            @if(!$isAllCongregations)
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                            @endif
+                        </div>
+                        <select 
+                            name="congregation_id" 
+                            onchange="this.form.submit()" 
+                            class="w-full text-xs font-bold rounded-xl border-slate-200 bg-white text-slate-800 py-1.5 pl-2 pr-7 focus:border-blue-500 focus:ring-blue-500 cursor-pointer shadow-2xs"
+                        >
+                            <option value="all" {{ $isAllCongregations ? 'selected' : '' }}>
+                                🌐 Todas as Congregações
+                            </option>
+                            @foreach($availableCongregations as $c)
+                                <option value="{{ $c->id }}" {{ $activeCongregationId === $c->id ? 'selected' : '' }}>
+                                    {{ $c->is_headquarters ? '🏛️' : '⛪' }} {{ $c->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </form>
+            </div>
+        @elseif(Auth::user()->congregation)
+            <div class="px-1">
+                <div class="p-2.5 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-center gap-2">
+                    <span class="text-sm">⛪</span>
+                    <div class="min-w-0 flex-1">
+                        <span class="text-[10px] font-bold text-blue-500 uppercase tracking-wider block">Congregação</span>
+                        <span class="text-xs font-bold text-blue-900 truncate block">{{ Auth::user()->congregation->name }}</span>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Grupo 1: Menu Principal -->
         <div class="space-y-1">
             <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
@@ -99,6 +149,16 @@
                     <span>Alunos Matriculados</span>
                 </x-sidebar-link>
 
+                <x-sidebar-link :href="route('professores.index')" :active="request()->routeIs('professores.*')">
+                    <!-- Lucide: graduation-cap -->
+                    <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('professores.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/>
+                        <path d="M22 10v6"/>
+                        <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+                    </svg>
+                    <span>Professores</span>
+                </x-sidebar-link>
+
                 <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
                     <!-- Lucide: line-chart -->
                     <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('reports.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -116,6 +176,18 @@
                 <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                     Administração
                 </div>
+
+                <x-sidebar-link :href="route('admin.congregacoes.index')" :active="request()->routeIs('admin.congregacoes.*')">
+                    <!-- Lucide: landmark / church -->
+                    <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('admin.congregacoes.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="2" x2="22" y1="22" y2="22"/>
+                        <line x1="12" x2="12" y1="2" y2="8"/>
+                        <path d="M4 10h16v12H4z"/>
+                        <path d="M12 2v6"/>
+                        <path d="m4 10 8-6 8 6"/>
+                    </svg>
+                    <span>Congregações</span>
+                </x-sidebar-link>
 
                 <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     <!-- Lucide: user-cog -->
@@ -289,6 +361,49 @@
                 </div>
             </div>
 
+            <!-- Seletor / Indicador de Congregação Mobile -->
+            @if(Auth::user()->isAdmin())
+                <div class="px-1">
+                    <form method="POST" action="{{ route('admin.congregacoes.switch') }}">
+                        @csrf
+                        <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 shadow-2xs">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                                    Congregação Ativa
+                                </span>
+                                @if(!$isAllCongregations)
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                                @endif
+                            </div>
+                            <select 
+                                name="congregation_id" 
+                                onchange="this.form.submit()" 
+                                class="w-full text-xs font-bold rounded-xl border-slate-200 bg-white text-slate-800 py-1.5 pl-2 pr-7 focus:border-blue-500 focus:ring-blue-500 cursor-pointer shadow-2xs"
+                            >
+                                <option value="all" {{ $isAllCongregations ? 'selected' : '' }}>
+                                    🌐 Todas as Congregações
+                                </option>
+                                @foreach($availableCongregations as $c)
+                                    <option value="{{ $c->id }}" {{ $activeCongregationId === $c->id ? 'selected' : '' }}>
+                                        {{ $c->is_headquarters ? '🏛️' : '⛪' }} {{ $c->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            @elseif(Auth::user()->congregation)
+                <div class="px-1">
+                    <div class="p-2.5 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-center gap-2">
+                        <span class="text-sm">⛪</span>
+                        <div class="min-w-0 flex-1">
+                            <span class="text-[10px] font-bold text-blue-500 uppercase tracking-wider block">Congregação</span>
+                            <span class="text-xs font-bold text-blue-900 truncate block">{{ Auth::user()->congregation->name }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Principal -->
             <div class="space-y-1">
                 <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
@@ -343,6 +458,15 @@
                         <span>Alunos Matriculados</span>
                     </x-sidebar-link>
 
+                    <x-sidebar-link :href="route('professores.index')" :active="request()->routeIs('professores.*')" @click="mobileSidebarOpen = false">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/>
+                            <path d="M22 10v6"/>
+                            <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+                        </svg>
+                        <span>Professores</span>
+                    </x-sidebar-link>
+
                     <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" @click="mobileSidebarOpen = false">
                         <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 3v18h18"/>
@@ -359,6 +483,17 @@
                     <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                         Administração
                     </div>
+
+                    <x-sidebar-link :href="route('admin.congregacoes.index')" :active="request()->routeIs('admin.congregacoes.*')" @click="mobileSidebarOpen = false">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="2" x2="22" y1="22" y2="22"/>
+                            <line x1="12" x2="12" y1="2" y2="8"/>
+                            <path d="M4 10h16v12H4z"/>
+                            <path d="M12 2v6"/>
+                            <path d="m4 10 8-6 8 6"/>
+                        </svg>
+                        <span>Congregações</span>
+                    </x-sidebar-link>
 
                     <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" @click="mobileSidebarOpen = false">
                         <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -37,6 +38,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'congregation_id',
         'name',
         'email',
         'password',
@@ -67,6 +69,14 @@ class User extends Authenticatable
             'role' => UserRole::class,
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Congregação à qual este usuário pertence.
+     */
+    public function congregation(): BelongsTo
+    {
+        return $this->belongsTo(Congregation::class, 'congregation_id');
     }
 
     /**

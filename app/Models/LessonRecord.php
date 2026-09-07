@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\BelongsToCongregation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property int $congregation_id
  * @property int $class_id
  * @property int $registered_by
  * @property Carbon|string $lesson_date
@@ -27,13 +29,14 @@ use Illuminate\Support\Carbon;
  * @property-read int $present_students_count
  * @property-read int $total_students_count
  * @property-read int $total_attendance
+ * @property-read Congregation $congregation
  * @property-read EbdClass $ebdClass
  * @property-read User $registeredBy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, LessonAttendance> $attendances
  */
 class LessonRecord extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToCongregation;
 
     /**
      * The table associated with the model.
@@ -48,6 +51,7 @@ class LessonRecord extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'congregation_id',
         'class_id',
         'registered_by',
         'lesson_date',

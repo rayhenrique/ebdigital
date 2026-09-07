@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\CongregationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Secretaria\ClassController;
 use App\Http\Controllers\Secretaria\ReportController;
 use App\Http\Controllers\Secretaria\StudentController;
+use App\Http\Controllers\Secretaria\TeacherController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -60,12 +62,22 @@ Route::middleware('auth')->group(function () {
         Route::resource('alunos', StudentController::class)->except(['show']);
         Route::patch('alunos/{aluno}/toggle', [StudentController::class, 'toggleActive'])->name('alunos.toggle');
 
+        // Professores da Congregação
+        Route::resource('professores', TeacherController::class)->except(['show']);
+        Route::patch('professores/{professore}/toggle', [TeacherController::class, 'toggleActive'])->name('professores.toggle');
+        Route::patch('professores/{professore}/reset-password', [TeacherController::class, 'resetPassword'])->name('professores.reset-password');
+
         // Relatórios da EBD
         Route::get('/relatorios', [ReportController::class, 'index'])->name('reports.index');
     });
 
     // Módulo Administrativo Exclusivo (Admin)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        // Gestão de Congregações
+        Route::resource('congregacoes', CongregationController::class)->except(['show']);
+        Route::patch('congregacoes/{congregacao}/toggle', [CongregationController::class, 'toggleActive'])->name('congregacoes.toggle');
+        Route::post('congregacoes/switch', [CongregationController::class, 'switchTenant'])->name('congregacoes.switch');
+
         // Gestão de Usuários
         Route::resource('users', UserController::class)->except(['show']);
         Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggle');
