@@ -41,7 +41,7 @@
                     class="block w-full pl-11 pr-4 py-3 min-h-[48px] text-sm text-slate-900 placeholder:text-slate-400 rounded-xl border border-slate-200 bg-white shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600 transition" 
                     type="email" 
                     name="email" 
-                    value="{{ old('email', 'admin@ebd.local') }}" 
+                    value="{{ old('email') }}" 
                     required 
                     autofocus 
                     autocomplete="username" 
@@ -68,7 +68,6 @@
                     class="block w-full pl-11 pr-11 py-3 min-h-[48px] text-sm text-slate-900 placeholder:text-slate-400 rounded-xl border border-slate-200 bg-white shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
                     :type="showPassword ? 'text' : 'password'"
                     name="password"
-                    value="senha123"
                     required 
                     autocomplete="current-password" 
                     placeholder="••••••••"
@@ -127,42 +126,4 @@
             </button>
         </div>
     </form>
-
-    <!-- Divisor sutil no rodapé -->
-    <div class="relative my-6">
-        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-            <div class="w-full border-t border-slate-200"></div>
-        </div>
-        <div class="relative flex justify-center text-xs">
-            <span class="bg-white px-3 text-slate-400 font-medium">Acesso Rápido de Teste</span>
-        </div>
-    </div>
-
-    <!-- Chips/Pills horizontais para preenchimento rápido -->
-    <div class="flex flex-wrap items-center justify-center gap-2" x-data>
-        <button 
-            type="button" 
-            @click="document.getElementById('email').value='admin@ebd.local'; document.getElementById('password').value='senha123';"
-            class="bg-slate-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 text-slate-700 text-xs font-medium py-1.5 px-3 rounded-full border border-slate-200 active:scale-95 transition-all cursor-pointer min-h-[36px] flex items-center gap-1.5 shadow-sm"
-        >
-            <span>👑</span>
-            <span>Pastor (Admin)</span>
-        </button>
-        <button 
-            type="button" 
-            @click="document.getElementById('email').value='secretario@ebd.local'; document.getElementById('password').value='senha123';"
-            class="bg-slate-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 text-slate-700 text-xs font-medium py-1.5 px-3 rounded-full border border-slate-200 active:scale-95 transition-all cursor-pointer min-h-[36px] flex items-center gap-1.5 shadow-sm"
-        >
-            <span>📋</span>
-            <span>Secretário</span>
-        </button>
-        <button 
-            type="button" 
-            @click="document.getElementById('email').value='professor1@ebd.local'; document.getElementById('password').value='senha123';"
-            class="bg-slate-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 text-slate-700 text-xs font-medium py-1.5 px-3 rounded-full border border-slate-200 active:scale-95 transition-all cursor-pointer min-h-[36px] flex items-center gap-1.5 shadow-sm"
-        >
-            <span>📖</span>
-            <span>Professor</span>
-        </button>
-    </div>
 </x-guest-layout>
