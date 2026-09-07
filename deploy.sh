@@ -32,7 +32,11 @@ else
     echo "⚠️ Node/NPM não encontrado no ambiente do usuário. Pulando npm run build."
 fi
 
-# 5. Executar migrações pendentes no banco de dados
+# 5. Publicar assets estáticos do Livewire para Nginx
+echo "📦 Publicando assets estáticos do Livewire..."
+php artisan livewire:publish --assets || true
+
+# 6. Executar migrações pendentes no banco de dados
 echo "🗄️ Executando migrações no banco de dados..."
 php artisan migrate --force
 
