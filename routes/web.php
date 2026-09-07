@@ -63,9 +63,11 @@ Route::middleware('auth')->group(function () {
         Route::patch('alunos/{aluno}/toggle', [StudentController::class, 'toggleActive'])->name('alunos.toggle');
 
         // Professores da Congregação
-        Route::resource('professores', TeacherController::class)->except(['show']);
-        Route::patch('professores/{professore}/toggle', [TeacherController::class, 'toggleActive'])->name('professores.toggle');
-        Route::patch('professores/{professore}/reset-password', [TeacherController::class, 'resetPassword'])->name('professores.reset-password');
+        Route::resource('professores', TeacherController::class)
+            ->parameters(['professores' => 'professor'])
+            ->except(['show']);
+        Route::patch('professores/{professor}/toggle', [TeacherController::class, 'toggleActive'])->name('professores.toggle');
+        Route::patch('professores/{professor}/reset-password', [TeacherController::class, 'resetPassword'])->name('professores.reset-password');
 
         // Relatórios da EBD
         Route::get('/relatorios', [ReportController::class, 'index'])->name('reports.index');
@@ -74,7 +76,9 @@ Route::middleware('auth')->group(function () {
     // Módulo Administrativo Exclusivo (Admin)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         // Gestão de Congregações
-        Route::resource('congregacoes', CongregationController::class)->except(['show']);
+        Route::resource('congregacoes', CongregationController::class)
+            ->parameters(['congregacoes' => 'congregacao'])
+            ->except(['show']);
         Route::patch('congregacoes/{congregacao}/toggle', [CongregationController::class, 'toggleActive'])->name('congregacoes.toggle');
         Route::post('congregacoes/switch', [CongregationController::class, 'switchTenant'])->name('congregacoes.switch');
 

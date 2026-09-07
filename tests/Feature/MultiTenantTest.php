@@ -224,6 +224,11 @@ class MultiTenantTest extends TestCase
         $this->assertNotNull($betel);
         $this->assertEquals('congregacao-betel', $betel->slug);
 
+        // Acessar tela de edição
+        $editResponse = $this->get(route('admin.congregacoes.edit', $betel));
+        $editResponse->assertOk();
+        $editResponse->assertSee('Editar: Congregação Betel');
+
         // Alternar status
         $this->patch(route('admin.congregacoes.toggle', $betel));
         $this->assertFalse($betel->fresh()->is_active);

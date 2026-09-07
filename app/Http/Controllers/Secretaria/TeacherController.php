@@ -109,34 +109,34 @@ class TeacherController extends Controller
             ->with('success', "Professor {$teacher->name} cadastrado com sucesso!");
     }
 
-    public function edit(User $professore): View
+    public function edit(User $professor): View
     {
-        $this->authorizeTeacherAccess($professore);
+        $this->authorizeTeacherAccess($professor);
 
-        $professore->load('teachingClasses');
+        $professor->load('teachingClasses');
         $classes = EbdClass::active()->orderBy('name')->get();
 
         return view('secretaria.teachers.edit', [
-            'teacher' => $professore,
+            'teacher' => $professor,
             'classes' => $classes,
-            'selectedClassIds' => $professore->teachingClasses->pluck('id')->toArray(),
+            'selectedClassIds' => $professor->teachingClasses->pluck('id')->toArray(),
         ]);
     }
 
-    public function update(UpdateTeacherRequest $request, User $professore): RedirectResponse
+    public function update(UpdateTeacherRequest $request, User $professor): RedirectResponse
     {
-        $this->authorizeTeacherAccess($professore);
+        $this->authorizeTeacherAccess($professor);
 
         $validated = $request->validated();
         $classIds = $validated['class_ids'] ?? [];
 
         $before = [
-            'name' => $professore->name,
-            'email' => $professore->email,
-            'is_active' => $professore->is_active,
+            'name' => $professor->name,
+            'email' => $professor->email,
+            'is_active' => $professor->is_active,
         ];
 
-        DB::transaction(function () use ($validated, $professore, $classIds) {
+        DB::transaction(function () use ($validated, $professor, $classIds) {
             $updateData = [
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -147,62 +147,62 @@ class TeacherController extends Controller
                 $updateData['password'] = Hash::make($validated['password']);
             }
 
-            $professore->update($updateData);
-            $professore->teachingClasses()->sync($classIds);
+            $professor->update($updateData);
+            $professor->teachingClasses()->sync($classIds);
         });
 
         AuditService::log(
             'TEACHER_UPDATED',
             User::class,
-            $professore->id,
+            $professor->id,
             $before,
-            ['name' => $professore->name, 'email' => $professore->email, 'is_active' => $professore->is_active]
+            ['name' => $professor->name, 'email' => $professor->email, 'is_active' => $professor->is_active]
         );
 
         return redirect()->route('professores.index')
-            ->with('success', "Professor {$professore->name} atualizado com sucesso!");
+            ->with('success', "Professor {$professor->name} atualizado com sucesso!");
     }
 
-    public function toggleActive(User $professore): RedirectResponse
+    public function toggleActive(User $professor): RedirectResponse
     {
-        $this->authorizeTeacherAccess($professore);
+        $this->authorizeTeacherAccess($professor);
 
-        $professore->is_active = ! $professore->is_active;
-        $professore->save();
+        $professor->is_active = ! $professor->is_active;
+        $professor->save();
 
         AuditService::log(
             'TEACHER_STATUS_TOGGLED',
             User::class,
-            $professore->id,
+            $professor->id,
             null,
-            ['is_active' => $professore->is_active]
+            ['is_active' => $professor->is_active]
         );
 
-        $status = $professore->is_active ? 'ativado' : 'desativado';
-        return redirect()->back()->with('success', "Professor {$professore->name} {$status} com sucesso!");
+        $status = $professor->is_active ? 'ativado' : 'desativado';
+        return redirect()->back()->with('success', "Professor {$professor->name} {$status} com sucesso!");
     }
 
-    public function resetPassword(Request $request, User $professore): RedirectResponse
+    public function resetPassword(Request $request, User $professor): RedirectResponse
     {
-        $this->authorizeTeacherAccess($professore);
+        $this->authorizeTeacherAccess($professor);
 
         $request->validate([
             'password' => ['required', 'string', 'min:6'],
         ]);
 
-        $professore->update([
+        $professor->update([
             'password' => Hash::make($request->input('password')),
         ]);
 
         AuditService::log(
             'TEACHER_PASSWORD_RESET',
             User::class,
-            $professore->id,
+            $professor->id,
             null,
             ['reset_by' => Auth::id()]
         );
 
-        return redirect()->back()->with('success', "Senha de {$professore->name} redefinida com sucesso!");
+        return redirect()->back()->with('success', "Senha de {$professor->name} redefinida com sucesso!");
     }
 
     /**

@@ -14,7 +14,16 @@ class UpdateTeacherRequest extends FormRequest
     {
         /** @var User|null $user */
         $user = $this->user();
-        return $user && ($user->isAdmin() || $user->isSecretario());
+        if (! $user || (! $user->isAdmin() && ! $user->isSecretario())) {
+            return false;
+        }
+
+        $targetUser = $this->route('professor') ?? $this->route('professore') ?? $this->route('teacher');
+        if ($targetUser instanceof User && $user->isSecretario()) {
+            return ($user->congregation_id ?? 1) === ($targetUser->congregation_id ?? 1);
+        }
+
+        return true;
     }
 
     /**
@@ -23,7 +32,7 @@ class UpdateTeacherRequest extends FormRequest
     public function rules(): array
     {
         /** @var User $targetUser */
-        $targetUser = $this->route('professore') ?? $this->route('teacher');
+        $targetUser = $this->route('professor') ?? $this->route('professore') ?? $this->route('teacher');
         $userId = $targetUser instanceof User ? $targetUser->id : (int) $targetUser;
 
         return [
