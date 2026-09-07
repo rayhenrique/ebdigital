@@ -22,10 +22,10 @@ class TakeAttendance extends Component
     public string $lessonDate;
     public ?string $lessonNumber = null;
     public ?string $lessonTitle = null;
-    public int $visitorsCount = 0;
-    public int $biblesCount = 0;
-    public int $magazinesCount = 0;
-    public string $offeringsAmount = '0.00';
+    public int|string|null $visitorsCount = 0;
+    public int|string|null $biblesCount = 0;
+    public int|string|null $magazinesCount = 0;
+    public int|string|null $offeringsAmount = '0.00';
     public ?string $observations = null;
 
     /**
@@ -170,7 +170,8 @@ class TakeAttendance extends Component
 
     public function getTotalCongregationProperty(): int
     {
-        return $this->presentCount + max(0, (int) $this->visitorsCount);
+        $visitors = is_numeric($this->visitorsCount) ? (int) $this->visitorsCount : 0;
+        return $this->presentCount + max(0, $visitors);
     }
 
     public function getAttendanceRateProperty(): int
@@ -196,10 +197,10 @@ class TakeAttendance extends Component
             'lessonDate' => ['required', 'date'],
             'lessonNumber' => ['nullable', 'string', 'max:50'],
             'lessonTitle' => ['nullable', 'string', 'max:255'],
-            'visitorsCount' => ['required', 'integer', 'min:0'],
-            'biblesCount' => ['required', 'integer', 'min:0'],
-            'magazinesCount' => ['required', 'integer', 'min:0'],
-            'offeringsAmount' => ['required', 'numeric', 'min:0'],
+            'visitorsCount' => ['nullable', 'numeric', 'min:0'],
+            'biblesCount' => ['nullable', 'numeric', 'min:0'],
+            'magazinesCount' => ['nullable', 'numeric', 'min:0'],
+            'offeringsAmount' => ['nullable', 'numeric', 'min:0'],
             'observations' => ['nullable', 'string'],
         ]);
 
@@ -233,10 +234,10 @@ class TakeAttendance extends Component
 
             $record->lesson_number = $this->lessonNumber;
             $record->lesson_title = $this->lessonTitle;
-            $record->visitors_count = $this->visitorsCount;
-            $record->bibles_count = $this->biblesCount;
-            $record->magazines_count = $this->magazinesCount;
-            $record->offerings_amount = $this->offeringsAmount;
+            $record->visitors_count = max(0, (int) ($this->visitorsCount ?: 0));
+            $record->bibles_count = max(0, (int) ($this->biblesCount ?: 0));
+            $record->magazines_count = max(0, (int) ($this->magazinesCount ?: 0));
+            $record->offerings_amount = max(0, (float) ($this->offeringsAmount ?: 0));
             $record->observations = $this->observations;
             $record->save();
 

@@ -83,7 +83,7 @@
             <span class="text-xs font-medium text-indigo-100">Total na Sala</span>
             <div class="mt-2 flex items-baseline justify-between">
                 <span class="text-2xl font-black text-white">{{ $this->totalCongregation }}</span>
-                <span class="text-xs text-indigo-200">+{{ $visitorsCount }} visit.</span>
+                <span class="text-xs text-indigo-200">+{{ (int) ($visitorsCount ?: 0) }} visit.</span>
             </div>
         </div>
     </div>
@@ -196,7 +196,7 @@
                 <input 
                     type="number" 
                     id="visitorsCount" 
-                    wire:model.live="visitorsCount" 
+                    wire:model.live.debounce.300ms="visitorsCount" 
                     min="0"
                     @if($isReadOnly) disabled @endif
                     class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 shadow-sm min-h-[48px] px-3 text-center font-bold"
@@ -208,7 +208,7 @@
                 <input 
                     type="number" 
                     id="biblesCount" 
-                    wire:model="biblesCount" 
+                    wire:model.blur="biblesCount" 
                     min="0"
                     @if($isReadOnly) disabled @endif
                     class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 shadow-sm min-h-[48px] px-3 text-center font-bold"
@@ -220,7 +220,7 @@
                 <input 
                     type="number" 
                     id="magazinesCount" 
-                    wire:model="magazinesCount" 
+                    wire:model.blur="magazinesCount" 
                     min="0"
                     @if($isReadOnly) disabled @endif
                     class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 shadow-sm min-h-[48px] px-3 text-center font-bold"
@@ -233,7 +233,7 @@
                     type="number" 
                     step="0.01" 
                     id="offeringsAmount" 
-                    wire:model="offeringsAmount" 
+                    wire:model.blur="offeringsAmount" 
                     min="0"
                     @if($isReadOnly) disabled @endif
                     class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 shadow-sm min-h-[48px] px-3 text-center font-bold text-emerald-700"

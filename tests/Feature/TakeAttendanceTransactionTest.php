@@ -128,4 +128,35 @@ class TakeAttendanceTransactionTest extends TestCase
         $this->assertEquals(1, LessonRecord::where('class_id', $class->id)->where('lesson_date', $today)->count());
         $this->assertEquals(5, LessonRecord::where('class_id', $class->id)->where('lesson_date', $today)->first()->visitors_count);
     }
+
+    public function test_empty_or_backspaced_numeric_inputs_do_not_throw_property_not_found_exception(): void
+    {
+        $professor = User::factory()->create([
+            'role' => UserRole::PROFESSOR,
+            'is_active' => true,
+        ]);
+
+        $class = EbdClass::create(['name' => 'Classe Jovens', 'is_active' => true]);
+        $class->teachers()->attach($professor->id);
+        $student = Student::create(['class_id' => $class->id, 'name' => 'Aluno Jovem', 'is_active' => true]);
+        $today = now()->format('Y-m-d');
+
+        // Simulates backspacing input to empty string "" while typing
+        Livewire::actingAs($professor)
+            ->test(\App\Livewire\TakeAttendance::class, ['classId' => $class->id, 'date' => $today])
+            ->set('attendances.' . $student->id, true)
+            ->set('visitorsCount', '')
+            ->set('biblesCount', '')
+            ->set('magazinesCount', '')
+            ->set('offeringsAmount', '')
+            ->assertSeeHtml('+0 visit.')
+            ->call('save');
+
+        $record = LessonRecord::where('class_id', $class->id)->where('lesson_date', $today)->first();
+        $this->assertNotNull($record);
+        $this->assertEquals(0, $record->visitors_count);
+        $this->assertEquals(0, $record->bibles_count);
+        $this->assertEquals(0, $record->magazines_count);
+        $this->assertEquals('0.00', $record->offerings_amount);
+    }
 }
