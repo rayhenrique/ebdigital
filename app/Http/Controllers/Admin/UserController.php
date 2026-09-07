@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -146,5 +148,36 @@ class UserController extends Controller
         );
 
         return redirect()->back()->with('success', "Senha do usuário {$user->name} foi redefinida com sucesso!");
+    }
+
+    public function destroy(User $user): RedirectResponse
+    {
+        if (Auth::id() === $user->id) {
+            return redirect()->back()->with('error', 'Você não pode excluir a sua própria conta de acesso.');
+        }
+
+        if ($user->lessonRecords()->exists()) {
+            return redirect()->back()->with('error', "O usuário '{$user->name}' possui registros de chamada lançados e não pode ser excluído para não corromper o histórico. Desative o usuário para revogar o acesso.");
+        }
+
+        $userName = $user->name;
+        $userId = $user->id;
+        $userEmail = $user->email;
+        $userRole = $user->role->value;
+
+        DB::transaction(function () use ($user) {
+            $user->teachingClasses()->detach();
+            $user->delete();
+        });
+
+        AuditService::log(
+            'USER_DELETED',
+            User::class,
+            $userId,
+            ['name' => $userName, 'email' => $userEmail, 'role' => $userRole],
+            null
+        );
+
+        return redirect()->route('admin.users.index')->with('success', "Usuário '{$userName}' excluído com sucesso!");
     }
 }

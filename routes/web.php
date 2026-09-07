@@ -52,18 +52,18 @@ Route::middleware('auth')->group(function () {
         })->name('secretaria.dashboard');
 
         // Classes / Turmas
-        Route::resource('classes', ClassController::class)->except(['show', 'destroy']);
+        Route::resource('classes', ClassController::class)->except(['show']);
         Route::patch('classes/{class}/toggle', [ClassController::class, 'toggleActive'])->name('classes.toggle');
 
         // Alunos
-        Route::resource('alunos', StudentController::class)->except(['show', 'destroy']);
+        Route::resource('alunos', StudentController::class)->except(['show']);
         Route::patch('alunos/{aluno}/toggle', [StudentController::class, 'toggleActive'])->name('alunos.toggle');
     });
 
     // Módulo Administrativo Exclusivo (Admin)
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         // Gestão de Usuários
-        Route::resource('users', UserController::class)->except(['show', 'destroy']);
+        Route::resource('users', UserController::class)->except(['show']);
         Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggle');
         Route::patch('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
 

@@ -153,4 +153,34 @@ class ClassController extends Controller
         $statusMsg = $class->is_active ? 'ativada' : 'desativada';
         return redirect()->back()->with('success', "Classe {$class->name} {$statusMsg} com sucesso!");
     }
+
+    public function destroy(EbdClass $class): RedirectResponse
+    {
+        if ($class->students()->exists()) {
+            $count = $class->students()->count();
+            return redirect()->back()->with('error', "A classe '{$class->name}' possui {$count} aluno(s) cadastrado(s) e não pode ser excluída diretamente. Remova ou transfira os alunos primeiro.");
+        }
+
+        if ($class->lessonRecords()->exists()) {
+            return redirect()->back()->with('error', "A classe '{$class->name}' possui histórico de chamadas e não pode ser excluída para preservar os relatórios da EBD. Desative a classe para arquivá-la.");
+        }
+
+        $className = $class->name;
+        $classId = $class->id;
+
+        DB::transaction(function () use ($class) {
+            $class->teachers()->detach();
+            $class->delete();
+        });
+
+        AuditService::log(
+            'CLASS_DELETED',
+            EbdClass::class,
+            $classId,
+            ['name' => $className],
+            null
+        );
+
+        return redirect()->route('classes.index')->with('success', "Classe '{$className}' excluída com sucesso!");
+    }
 }

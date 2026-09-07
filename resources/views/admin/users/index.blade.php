@@ -99,18 +99,18 @@
                                 </span>
                             </div>
 
-                            <!-- Ações Mobile (3 Colunas: Editar, Redefinir Senha, Ativar/Desativar) -->
-                            <div class="grid grid-cols-3 gap-2 pt-1">
+                            <!-- Ações Mobile (4 Colunas: Editar, Redefinir Senha, Ativar/Desativar, Excluir) -->
+                            <div class="grid {{ $u->id !== auth()->id() ? 'grid-cols-4' : 'grid-cols-3' }} gap-1.5 pt-1">
                                 <a 
                                     href="{{ route('admin.users.edit', $u) }}" 
-                                    class="flex items-center justify-center px-2 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 min-h-[44px]"
+                                    class="flex items-center justify-center px-1.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 min-h-[44px]"
                                 >
                                     Editar
                                 </a>
                                 <button 
                                     type="button" 
                                     @click="openResetModal('{{ addslashes($u->name) }}', '{{ route('admin.users.reset-password', $u) }}')"
-                                    class="flex items-center justify-center gap-1 px-2 py-2.5 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold hover:bg-blue-100 min-h-[44px] cursor-pointer"
+                                    class="flex items-center justify-center gap-1 px-1.5 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold hover:bg-blue-100 min-h-[44px] cursor-pointer"
                                     title="Redefinir Senha"
                                 >
                                     <span>🔑</span>
@@ -122,9 +122,19 @@
                                         @method('PATCH')
                                         <button 
                                             type="submit" 
-                                            class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl text-xs font-bold min-h-[44px] {{ $u->is_active ? 'border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}"
+                                            class="w-full flex items-center justify-center px-1 py-2 rounded-xl text-[11px] font-bold min-h-[44px] {{ $u->is_active ? 'border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}"
                                         >
                                             {{ $u->is_active ? 'Desativar' : 'Ativar' }}
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.users.destroy', $u) }}" class="w-full" onsubmit="return confirm('Deseja realmente excluir o usuário \'{{ addslashes($u->name) }}\'? Esta ação é irreversível.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button 
+                                            type="submit" 
+                                            class="w-full flex items-center justify-center px-1 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-[11px] font-bold hover:bg-rose-100 min-h-[44px] cursor-pointer"
+                                        >
+                                            Excluir
                                         </button>
                                     </form>
                                 @else
@@ -192,6 +202,13 @@
                                                 @method('PATCH')
                                                 <button type="submit" class="text-xs font-semibold {{ $u->is_active ? 'text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200' : 'text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border-emerald-200' }} px-3 py-1.5 rounded-xl border transition">
                                                     {{ $u->is_active ? 'Desativar' : 'Ativar' }}
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ route('admin.users.destroy', $u) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir o usuário \'{{ addslashes($u->name) }}\'? Esta ação é irreversível.')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-xs font-semibold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-3 py-1.5 rounded-xl border transition cursor-pointer">
+                                                    Excluir
                                                 </button>
                                             </form>
                                         @endif

@@ -139,4 +139,27 @@ class StudentController extends Controller
         $statusMsg = $aluno->is_active ? 'ativado' : 'desativado';
         return redirect()->back()->with('success', "Aluno {$aluno->name} {$statusMsg} com sucesso!");
     }
+
+    public function destroy(Student $aluno): RedirectResponse
+    {
+        if ($aluno->attendances()->exists()) {
+            return redirect()->back()->with('error', "O aluno '{$aluno->name}' possui presenças registradas em chamadas e não pode ser excluído para não corromper o histórico. Desative o aluno para arquivá-lo.");
+        }
+
+        $studentName = $aluno->name;
+        $studentId = $aluno->id;
+        $classId = $aluno->class_id;
+
+        $aluno->delete();
+
+        AuditService::log(
+            'STUDENT_DELETED',
+            Student::class,
+            $studentId,
+            ['name' => $studentName, 'class_id' => $classId],
+            null
+        );
+
+        return redirect()->route('alunos.index')->with('success', "Aluno '{$studentName}' excluído com sucesso!");
+    }
 }

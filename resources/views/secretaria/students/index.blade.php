@@ -93,10 +93,10 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2 pt-1">
+                            <div class="grid grid-cols-3 gap-2 pt-1">
                                 <a 
                                     href="{{ route('alunos.edit', $s) }}" 
-                                    class="flex items-center justify-center px-4 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-bold hover:bg-indigo-100 min-h-[44px]"
+                                    class="flex items-center justify-center px-2 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-bold hover:bg-indigo-100 min-h-[44px]"
                                 >
                                     Editar
                                 </a>
@@ -105,9 +105,19 @@
                                     @method('PATCH')
                                     <button 
                                         type="submit" 
-                                        class="w-full flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold min-h-[44px] {{ $s->is_active ? 'border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}"
+                                        class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl text-xs font-bold min-h-[44px] {{ $s->is_active ? 'border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}"
                                     >
                                         {{ $s->is_active ? 'Desativar' : 'Ativar' }}
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('alunos.destroy', $s) }}" class="w-full" onsubmit="return confirm('Deseja realmente excluir o aluno \'{{ addslashes($s->name) }}\'? Esta ação é irreversível.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button 
+                                        type="submit" 
+                                        class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold hover:bg-rose-100 min-h-[44px] cursor-pointer"
+                                    >
+                                        Excluir
                                     </button>
                                 </form>
                             </div>
@@ -163,6 +173,13 @@
                                             @method('PATCH')
                                             <button type="submit" class="text-xs font-semibold {{ $s->is_active ? 'text-amber-600 hover:text-amber-800' : 'text-emerald-600 hover:text-emerald-800' }} p-2">
                                                 {{ $s->is_active ? 'Desativar' : 'Ativar' }}
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ route('alunos.destroy', $s) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir o aluno \'{{ addslashes($s->name) }}\'?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-xs font-semibold text-rose-600 hover:text-rose-800 p-2 cursor-pointer">
+                                                Excluir
                                             </button>
                                         </form>
                                     </td>
