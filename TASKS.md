@@ -42,3 +42,12 @@
 - [x] 7.1 Teste: Bloqueio de edição retroativa por professores.
 - [x] 7.2 Teste: Integridade da transação de chamada.
 - [x] 7.3 Teste: Expurgo de logs no comando artisan.
+
+## Fase 8: Módulo de Relatórios da EBD
+- [x] 8.1 Controller `ReportController` e rota `/relatorios` protegida para Admin e Secretário.
+- [x] 8.2 Componente Livewire `EbdReports` com filtros de período (mês, trimestres, ano).
+- [x] 8.3 Relatório Consolidado Trimestral/Mensal com cards analíticos e tabela comparativa por classe.
+- [x] 8.4 Relatório de Frequência Nominal com histórico de presença/falta e alerta de faltosos crônicos (3+ faltas seguidas para visitação pastoral).
+- [x] 8.5 Relatório de Aniversariantes do mês com cálculo de idade e botão de felicitação direta via WhatsApp.
+- [x] 8.6 Layout de Impressão Oficial A4/PDF (`@media print`) com timbre da Assembleia de Deus e campos de assinatura (Pastor e Superintendente).
+- [x] 8.7 Testes automatizados cobrindo acesso, cálculo de métricas, atalhos de data e aniversariantes (`ReportsTest`).

@@ -8,6 +8,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Secretaria\ClassController;
+use App\Http\Controllers\Secretaria\ReportController;
 use App\Http\Controllers\Secretaria\StudentController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,9 @@ Route::middleware('auth')->group(function () {
         // Alunos
         Route::resource('alunos', StudentController::class)->except(['show']);
         Route::patch('alunos/{aluno}/toggle', [StudentController::class, 'toggleActive'])->name('alunos.toggle');
+
+        // Relatórios da EBD
+        Route::get('/relatorios', [ReportController::class, 'index'])->name('reports.index');
     });
 
     // Módulo Administrativo Exclusivo (Admin)
