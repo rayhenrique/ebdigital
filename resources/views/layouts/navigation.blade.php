@@ -1,326 +1,403 @@
-<nav x-data="{ open: false }" class="backdrop-blur-md bg-white/80 border-b border-slate-100 sticky top-0 z-40 shadow-xs">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 gap-4">
-            <!-- 1. Bloco Esquerda: Brand / Logo -->
-            <div class="shrink-0 flex items-center">
-                <a href="{{ route('dashboard') }}" wire:navigate.hover class="flex items-center gap-3 group">
-                    <img 
-                        src="{{ asset('images/logo-ad-transparent.png') }}" 
-                        alt="Logo Assembleia de Deus" 
-                        class="h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
-                    />
-                    <div class="flex flex-col">
-                        <span class="font-extrabold text-base sm:text-lg text-slate-850 tracking-tight leading-tight">
-                            Caderneta <span class="text-blue-600">EBD</span>
-                        </span>
-                        <span class="text-[10px] text-slate-400 font-medium hidden sm:inline leading-none">
-                            Assembleia de Deus
-                        </span>
-                    </div>
-                </a>
+<!-- =========================================================================
+     1. DESKTOP SIDEBAR (Fixo à Esquerda em telas md/lg)
+     ========================================================================= -->
+<aside class="hidden md:flex flex-col w-64 lg:w-72 bg-white border-r border-slate-200/80 sticky top-0 h-screen z-30 shrink-0 select-none shadow-xs">
+    <!-- Brand / Logo EBD -->
+    <div class="h-16 px-5 flex items-center border-b border-slate-100 shrink-0">
+        <a href="{{ route('dashboard') }}" wire:navigate.hover class="flex items-center gap-3 group">
+            <img 
+                src="{{ asset('images/logo-ad-transparent.png') }}" 
+                alt="Logo Assembleia de Deus" 
+                class="h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+            />
+            <div class="flex flex-col">
+                <span class="font-extrabold text-base lg:text-lg text-slate-850 tracking-tight leading-tight">
+                    Caderneta <span class="text-blue-600">EBD</span>
+                </span>
+                <span class="text-[10px] text-slate-400 font-medium leading-none">
+                    Assembleia de Deus
+                </span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Navegação com Scroll Vertical -->
+    <div class="flex-1 px-3.5 py-4 space-y-6 overflow-y-auto">
+        <!-- Card Resumo do Usuário Logado -->
+        <div class="p-3 rounded-2xl bg-slate-50/90 border border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-sm font-bold shadow-xs shrink-0">
+                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+            </div>
+            <div class="flex flex-col min-w-0 flex-1">
+                <span class="font-bold text-xs lg:text-sm text-slate-850 truncate" title="{{ Auth::user()->name }}">
+                    {{ Auth::user()->name }}
+                </span>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0
+                        {{ Auth::user()->isAdmin() ? 'bg-purple-50 text-purple-700 border border-purple-200/70' : (Auth::user()->isSecretario() ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/70' : 'bg-blue-50 text-blue-700 border border-blue-200/70') }}">
+                        {{ Auth::user()->role?->label() ?? 'Usuário' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grupo 1: Menu Principal -->
+        <div class="space-y-1">
+            <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                Principal
             </div>
 
-            <!-- 2. Bloco Centro: Links de Navegação (Desktop) -->
-            <div class="hidden md:flex items-center gap-2 lg:gap-2.5">
-                @if(Auth::user()->isProfessor())
-                    <x-nav-link :href="route('chamada.index')" :active="request()->routeIs('chamada.*')">
-                        <!-- Lucide: clipboard-check -->
-                        <svg class="w-4.5 h-4.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                            <path d="m9 14 2 2 4-4"/>
-                        </svg>
-                        <span>Minhas Chamadas</span>
-                    </x-nav-link>
-                @endif
+            @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
+                <x-sidebar-link :href="route('secretaria.dashboard')" :active="request()->routeIs('secretaria.dashboard') || request()->routeIs('dashboard')">
+                    <!-- Lucide: layout-dashboard -->
+                    <svg class="w-4.5 h-4.5 shrink-0 {{ (request()->routeIs('secretaria.dashboard') || request()->routeIs('dashboard')) ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="7" height="9" x="3" y="3" rx="1"/>
+                        <rect width="7" height="5" x="14" y="3" rx="1"/>
+                        <rect width="7" height="9" x="14" y="12" rx="1"/>
+                        <rect width="7" height="5" x="3" y="16" rx="1"/>
+                    </svg>
+                    <span>Dashboard Geral</span>
+                </x-sidebar-link>
+            @endif
+
+            <x-sidebar-link :href="route('chamada.index')" :active="request()->routeIs('chamada.*')">
+                <!-- Lucide: clipboard-check -->
+                <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('chamada.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                    <path d="m9 14 2 2 4-4"/>
+                </svg>
+                <span>{{ Auth::user()->isProfessor() ? 'Minhas Chamadas' : 'Lançar Chamadas' }}</span>
+            </x-sidebar-link>
+        </div>
+
+        <!-- Grupo 2: Gestão da EBD (Secretaria & Admin) -->
+        @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
+            <div class="space-y-1">
+                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Gestão Escolar
+                </div>
+
+                <x-sidebar-link :href="route('classes.index')" :active="request()->routeIs('classes.*')">
+                    <!-- Lucide: layers -->
+                    <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('classes.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
+                        <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>
+                        <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/>
+                    </svg>
+                    <span>Classes / Turmas</span>
+                </x-sidebar-link>
+
+                <x-sidebar-link :href="route('alunos.index')" :active="request()->routeIs('alunos.*')">
+                    <!-- Lucide: users -->
+                    <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('alunos.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span>Alunos Matriculados</span>
+                </x-sidebar-link>
+            </div>
+        @endif
+
+        <!-- Grupo 3: Administração Geral (Apenas Admin) -->
+        @if(Auth::user()->isAdmin())
+            <div class="space-y-1">
+                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Administração
+                </div>
+
+                <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                    <!-- Lucide: user-cog -->
+                    <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('admin.users.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="15" r="3"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M10 15H6a4 4 0 0 0-4 4v2"/>
+                        <path d="m21.7 16.4-.9-.3"/>
+                        <path d="m15.2 13.9-.9-.3"/>
+                        <path d="m16.6 18.7.3-.9"/>
+                        <path d="m19.1 12.2.3-.9"/>
+                    </svg>
+                    <span>Gestão de Usuários</span>
+                </x-sidebar-link>
+
+                <x-sidebar-link :href="route('admin.audit.index')" :active="request()->routeIs('admin.audit.*')">
+                    <!-- Lucide: history -->
+                    <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('admin.audit.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                        <path d="M12 7v5l4 2"/>
+                    </svg>
+                    <span>Logs de Auditoria</span>
+                </x-sidebar-link>
+            </div>
+        @endif
+    </div>
+
+    <!-- Rodapé da Sidebar: Perfil & Sair -->
+    <div class="p-3 border-t border-slate-100 bg-slate-50/50 space-y-1 shrink-0">
+        <x-sidebar-link :href="route('profile.edit')" :active="request()->routeIs('profile.*')">
+            <!-- Lucide: user -->
+            <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('profile.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Meu Perfil</span>
+        </x-sidebar-link>
+
+        <form method="POST" action="{{ route('logout') }}" class="w-full">
+            @csrf
+            <button 
+                type="submit" 
+                class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 transition-all cursor-pointer group"
+            >
+                <!-- Lucide: log-out -->
+                <svg class="w-4.5 h-4.5 shrink-0 text-rose-500 group-hover:text-rose-600 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" x2="9" y1="12" y2="12"/>
+                </svg>
+                <span>Sair do Sistema</span>
+            </button>
+        </form>
+    </div>
+</aside>
+
+<!-- =========================================================================
+     2. MOBILE TOPBAR (Apenas visível em celulares < md)
+     ========================================================================= -->
+<header class="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 h-16 px-4 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-2.5">
+        <!-- Botão Abrir Menu Hambúrguer -->
+        <button 
+            type="button"
+            @click="mobileSidebarOpen = true" 
+            class="inline-flex items-center justify-center p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 focus:outline-none min-h-[44px] min-w-[44px] transition cursor-pointer"
+            aria-label="Abrir menu lateral"
+        >
+            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+
+        <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-2">
+            <img 
+                src="{{ asset('images/logo-ad-transparent.png') }}" 
+                alt="Logo Assembleia de Deus" 
+                class="h-8 w-auto object-contain"
+            />
+            <span class="font-extrabold text-base text-slate-850 tracking-tight">
+                Caderneta <span class="text-blue-600">EBD</span>
+            </span>
+        </a>
+    </div>
+
+    <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold 
+            {{ Auth::user()->isAdmin() ? 'bg-purple-50 text-purple-700 border border-purple-100' : (Auth::user()->isSecretario() ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-blue-50 text-blue-700 border border-blue-100') }}">
+            {{ Auth::user()->role?->label() ?? 'Usuário' }}
+        </span>
+
+        <a href="{{ route('profile.edit') }}" wire:navigate class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+        </a>
+    </div>
+</header>
+
+<!-- =========================================================================
+     3. MOBILE DRAWER (Gaveta Lateral Off-Canvas deslizante)
+     ========================================================================= -->
+<div 
+    x-show="mobileSidebarOpen" 
+    x-cloak
+    class="md:hidden fixed inset-0 z-50 flex"
+    role="dialog" 
+    aria-modal="true"
+>
+    <!-- Fundo Escurecido com Blur (Backdrop) -->
+    <div 
+        x-show="mobileSidebarOpen" 
+        x-transition:enter="transition-opacity ease-linear duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-linear duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        @click="mobileSidebarOpen = false"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs"
+    ></div>
+
+    <!-- Painel Lateral Deslizante -->
+    <div 
+        x-show="mobileSidebarOpen" 
+        x-transition:enter="transition ease-out duration-250 transform"
+        x-transition:enter-start="-translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="-translate-x-full"
+        class="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-2xl z-10"
+    >
+        <!-- Topo da Gaveta Mobile (Logo + Botão Fechar) -->
+        <div class="h-16 px-4 flex items-center justify-between border-b border-slate-100 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <img 
+                    src="{{ asset('images/logo-ad-transparent.png') }}" 
+                    alt="Logo Assembleia de Deus" 
+                    class="h-8 w-auto object-contain"
+                />
+                <span class="font-extrabold text-base text-slate-850 tracking-tight">
+                    Caderneta <span class="text-blue-600">EBD</span>
+                </span>
+            </div>
+            <button 
+                type="button" 
+                @click="mobileSidebarOpen = false" 
+                class="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 focus:outline-none min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
+                aria-label="Fechar menu lateral"
+            >
+                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Links da Gaveta Mobile -->
+        <div class="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+            <!-- Usuário -->
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-xs shrink-0">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </div>
+                <div class="flex flex-col min-w-0 flex-1">
+                    <span class="font-bold text-xs text-slate-850 truncate">
+                        {{ Auth::user()->name }}
+                    </span>
+                    <span class="text-[11px] text-slate-400 truncate">
+                        {{ Auth::user()->email }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Principal -->
+            <div class="space-y-1">
+                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Principal
+                </div>
 
                 @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
-                    <x-nav-link :href="route('secretaria.dashboard')" :active="request()->routeIs('secretaria.dashboard')">
-                        <!-- Lucide: layout-dashboard -->
-                        <svg class="w-4.5 h-4.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <x-sidebar-link :href="route('secretaria.dashboard')" :active="request()->routeIs('secretaria.dashboard') || request()->routeIs('dashboard')" @click="mobileSidebarOpen = false">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="7" height="9" x="3" y="3" rx="1"/>
                             <rect width="7" height="5" x="14" y="3" rx="1"/>
                             <rect width="7" height="9" x="14" y="12" rx="1"/>
                             <rect width="7" height="5" x="3" y="16" rx="1"/>
                         </svg>
-                        <span>Dashboard</span>
-                    </x-nav-link>
+                        <span>Dashboard Geral</span>
+                    </x-sidebar-link>
+                @endif
 
-                    <x-nav-link :href="route('chamada.index')" :active="request()->routeIs('chamada.*')">
-                        <!-- Lucide: clipboard-check -->
-                        <svg class="w-4.5 h-4.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                            <path d="m9 14 2 2 4-4"/>
-                        </svg>
-                        <span>Chamadas</span>
-                    </x-nav-link>
+                <x-sidebar-link :href="route('chamada.index')" :active="request()->routeIs('chamada.*')" @click="mobileSidebarOpen = false">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                        <path d="m9 14 2 2 4-4"/>
+                    </svg>
+                    <span>{{ Auth::user()->isProfessor() ? 'Minhas Chamadas' : 'Lançar Chamadas' }}</span>
+                </x-sidebar-link>
+            </div>
 
-                    <x-nav-link :href="route('classes.index')" :active="request()->routeIs('classes.*')">
-                        <!-- Lucide: layers -->
-                        <svg class="w-4.5 h-4.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Gestão EBD -->
+            @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
+                <div class="space-y-1">
+                    <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                        Gestão Escolar
+                    </div>
+
+                    <x-sidebar-link :href="route('classes.index')" :active="request()->routeIs('classes.*')" @click="mobileSidebarOpen = false">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
                             <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>
                             <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/>
                         </svg>
-                        <span>Classes</span>
-                    </x-nav-link>
+                        <span>Classes / Turmas</span>
+                    </x-sidebar-link>
 
-                    <x-nav-link :href="route('alunos.index')" :active="request()->routeIs('alunos.*')">
-                        <!-- Lucide: users -->
-                        <svg class="w-4.5 h-4.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <x-sidebar-link :href="route('alunos.index')" :active="request()->routeIs('alunos.*')" @click="mobileSidebarOpen = false">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
                             <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
-                        <span>Alunos</span>
-                    </x-nav-link>
-                @endif
+                        <span>Alunos Matriculados</span>
+                    </x-sidebar-link>
+                </div>
+            @endif
 
-                @if(Auth::user()->isAdmin())
-                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                        <!-- Lucide: user-cog / shield-user -->
-                        <svg class="w-4.5 h-4.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Admin -->
+            @if(Auth::user()->isAdmin())
+                <div class="space-y-1">
+                    <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                        Administração
+                    </div>
+
+                    <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" @click="mobileSidebarOpen = false">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="18" cy="15" r="3"/>
                             <circle cx="9" cy="7" r="4"/>
                             <path d="M10 15H6a4 4 0 0 0-4 4v2"/>
                             <path d="m21.7 16.4-.9-.3"/>
                             <path d="m15.2 13.9-.9-.3"/>
-                            <path d="m16.6 18.7.3-.9"/>
-                            <path d="m19.1 12.2.3-.9"/>
-                            <path d="m19.6 18.7-.4-.8"/>
-                            <path d="m16.8 12.3-.4-.8"/>
-                            <path d="m14.3 16.6.8-.4"/>
-                            <path d="m20.7 13.8.8-.4"/>
                         </svg>
-                        <span>Usuários</span>
-                    </x-nav-link>
+                        <span>Gestão de Usuários</span>
+                    </x-sidebar-link>
 
-                    <x-nav-link :href="route('admin.audit.index')" :active="request()->routeIs('admin.audit.*')">
-                        <!-- Lucide: history / file-search -->
-                        <svg class="w-4.5 h-4.5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <x-sidebar-link :href="route('admin.audit.index')" :active="request()->routeIs('admin.audit.*')" @click="mobileSidebarOpen = false">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                             <path d="M3 3v5h5"/>
                             <path d="M12 7v5l4 2"/>
                         </svg>
-                        <span>Auditoria</span>
-                    </x-nav-link>
-                @endif
-            </div>
+                        <span>Logs de Auditoria</span>
+                    </x-sidebar-link>
+                </div>
+            @endif
+        </div>
 
-            <!-- 3. Bloco Direita: Perfil do Usuário (Desktop) -->
-            <div class="hidden sm:flex sm:items-center gap-3">
-                <!-- Badge de Papel Sutil -->
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 
-                    {{ Auth::user()->isAdmin() ? 'bg-purple-50 text-purple-700 border border-purple-200/80' : (Auth::user()->isSecretario() ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80' : 'bg-blue-50 text-blue-700 border border-blue-200/80') }}">
-                    {{ Auth::user()->role?->label() ?? 'Usuário' }}
-                </span>
+        <!-- Rodapé da Gaveta Mobile -->
+        <div class="p-3 border-t border-slate-100 bg-slate-50/70 space-y-1 shrink-0 pb-6">
+            <x-sidebar-link :href="route('profile.edit')" :active="request()->routeIs('profile.*')" @click="mobileSidebarOpen = false">
+                <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Meu Perfil</span>
+            </x-sidebar-link>
 
-                <!-- Menu Dropdown do Perfil -->
-                <x-dropdown align="right" width="52">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center gap-2.5 p-1.5 px-2.5 text-sm font-semibold rounded-xl text-slate-700 bg-transparent hover:bg-slate-50 focus:outline-none transition-colors border border-transparent hover:border-slate-200/70 cursor-pointer group">
-                            <!-- Avatar circular com inicial -->
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-xs shrink-0">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            </div>
-                            <div class="max-w-[150px] truncate text-slate-850 font-semibold group-hover:text-blue-600 transition-colors">
-                                {{ Auth::user()->name }}
-                            </div>
-                            <!-- Chevron Down -->
-                            <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <div class="px-4 py-2.5 border-b border-slate-100">
-                            <p class="text-[11px] text-slate-400 font-medium">Conectado como</p>
-                            <p class="text-xs font-bold text-slate-800 truncate">{{ Auth::user()->email }}</p>
-                        </div>
-
-                        <x-dropdown-link :href="route('profile.edit')" wire:navigate class="flex items-center gap-2 text-slate-700 hover:text-blue-600">
-                            <svg class="w-4 h-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                            </svg>
-                            <span>Meu Perfil</span>
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault(); this.closest('form').submit();"
-                                    class="text-rose-600 hover:text-rose-700 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-rose-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                                </svg>
-                                <span>Sair do Sistema</span>
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- 4. Mobile Header Right (Badge de papel + Avatar + Drawer Toggle) -->
-            <div class="flex items-center gap-2 sm:hidden">
-                <!-- Badge de Papel Mobile -->
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold 
-                    {{ Auth::user()->isAdmin() ? 'bg-purple-50 text-purple-700 border border-purple-100' : (Auth::user()->isSecretario() ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-blue-50 text-blue-700 border border-blue-100') }}">
-                    {{ Auth::user()->role?->label() ?? 'Usuário' }}
-                </span>
-
-                <!-- Avatar Circle Mobile -->
-                <a href="{{ route('profile.edit') }}" wire:navigate class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </a>
-
-                <!-- Hamburger Drawer Toggle Mobile -->
+            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                @csrf
                 <button 
-                    @click="open = ! open" 
-                    class="inline-flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 focus:outline-none min-h-[44px] min-w-[44px] transition"
-                    aria-label="Abrir menu de navegação"
+                    type="submit" 
+                    class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 transition-all cursor-pointer"
                 >
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <svg class="w-4.5 h-4.5 shrink-0 text-rose-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" x2="9" y1="12" y2="12"/>
                     </svg>
+                    <span>Sair do Sistema</span>
                 </button>
-            </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <!-- Responsive Navigation Menu (Mobile Drawer) -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white/95 backdrop-blur-md border-b border-slate-200">
-        <div class="pt-2 pb-3 space-y-1 px-2">
-            @if(Auth::user()->isProfessor())
-                <x-responsive-nav-link :href="route('chamada.index')" :active="request()->routeIs('chamada.*')">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4.5 h-4.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                            <path d="m9 14 2 2 4-4"/>
-                        </svg>
-                        <span>Minhas Chamadas</span>
-                    </span>
-                </x-responsive-nav-link>
-            @endif
-
-            @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
-                <x-responsive-nav-link :href="route('secretaria.dashboard')" :active="request()->routeIs('secretaria.dashboard')">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4.5 h-4.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="7" height="9" x="3" y="3" rx="1"/>
-                            <rect width="7" height="5" x="14" y="3" rx="1"/>
-                            <rect width="7" height="9" x="14" y="12" rx="1"/>
-                            <rect width="7" height="5" x="3" y="16" rx="1"/>
-                        </svg>
-                        <span>Dashboard</span>
-                    </span>
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('chamada.index')" :active="request()->routeIs('chamada.*')">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4.5 h-4.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                            <path d="m9 14 2 2 4-4"/>
-                        </svg>
-                        <span>Chamadas</span>
-                    </span>
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('classes.index')" :active="request()->routeIs('classes.*')">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4.5 h-4.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
-                            <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>
-                            <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/>
-                        </svg>
-                        <span>Classes</span>
-                    </span>
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('alunos.index')" :active="request()->routeIs('alunos.*')">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4.5 h-4.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                        <span>Alunos</span>
-                    </span>
-                </x-responsive-nav-link>
-            @endif
-
-            @if(Auth::user()->isAdmin())
-                <div class="border-t border-slate-100 my-2 pt-2">
-                    <span class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Administração</span>
-                    <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                        <span class="flex items-center gap-2">
-                            <svg class="w-4.5 h-4.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="18" cy="15" r="3"/>
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M10 15H6a4 4 0 0 0-4 4v2"/>
-                            </svg>
-                            <span>Gestão de Usuários</span>
-                        </span>
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('admin.audit.index')" :active="request()->routeIs('admin.audit.*')">
-                        <span class="flex items-center gap-2">
-                            <svg class="w-4.5 h-4.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                                <path d="M3 3v5h5"/>
-                                <path d="M12 7v5l4 2"/>
-                            </svg>
-                            <span>Logs de Auditoria</span>
-                        </span>
-                    </x-responsive-nav-link>
-                </div>
-            @endif
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-3 pb-3 border-t border-slate-100 px-4 bg-slate-50/50">
-            <div class="flex items-center justify-between mb-2">
-                <div>
-                    <div class="font-bold text-sm text-slate-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-xs text-slate-500">{{ Auth::user()->email }}</div>
-                </div>
-            </div>
-
-            <div class="mt-2 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4.5 h-4.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                        </svg>
-                        <span>Meu Perfil</span>
-                    </span>
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault(); this.closest('form').submit();"
-                            class="text-rose-600 font-semibold">
-                        <span class="flex items-center gap-2">
-                            <svg class="w-4.5 h-4.5 text-rose-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                            </svg>
-                            <span>Sair do Sistema</span>
-                        </span>
-                    </x-responsive-nav-link>
-                </form>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<!-- Mobile Bottom Navigation Bar (Bottom Nav Bar) -->
-<div class="sm:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 z-40 px-2 py-1 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+<!-- =========================================================================
+     4. MOBILE BOTTOM NAVIGATION BAR (Acesso Rápido com o Polegar)
+     ========================================================================= -->
+<div class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 z-40 px-2 py-1 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
     <div class="grid grid-cols-4 gap-1">
         <!-- 1. Painel -->
         @php

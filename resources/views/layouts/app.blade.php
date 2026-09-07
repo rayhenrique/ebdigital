@@ -35,26 +35,33 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-slate-50 text-slate-800 selection:bg-blue-600 selection:text-white">
+    <body 
+        x-data="{ mobileSidebarOpen: false }" 
+        class="font-sans antialiased bg-slate-50 text-slate-800 selection:bg-blue-600 selection:text-white"
+    >
         <!-- Barra de Progresso Superior de Navegação (Feedback Instantâneo) -->
         <div id="ebd-progress-bar" class="fixed top-0 left-0 right-0 h-[3px] z-[99999] pointer-events-none transition-all duration-300 opacity-0 -translate-y-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 shadow-[0_0_12px_rgba(37,99,235,0.8)]" style="width: 0%;"></div>
 
-        <div class="min-h-screen flex flex-col">
+        <!-- Estrutura Geral: Sidebar à Esquerda (Desktop) + Área de Conteúdo à Direita -->
+        <div class="min-h-screen flex flex-col md:flex-row bg-slate-50">
             @include('layouts.navigation')
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-xs">
-                    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+            <!-- Área de Conteúdo Principal (Direita no Desktop) -->
+            <div class="flex-1 flex flex-col min-w-0 min-h-screen">
+                <!-- Cabeçalho da Página (Page Heading) -->
+                @isset($header)
+                    <header class="bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-xs">
+                        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                            {{ $header }}
+                        </div>
+                    </header>
+                @endisset
 
-            <!-- Page Content (pb-24 on mobile prevents bottom navigation bar overlap) -->
-            <main class="flex-1 pb-24 sm:pb-10">
-                {{ $slot }}
-            </main>
+                <!-- Conteúdo da Página (pb-24 no mobile evita sobreposição com o menu inferior) -->
+                <main class="flex-1 pb-24 md:pb-12">
+                    {{ $slot }}
+                </main>
+            </div>
         </div>
         @livewireScripts
 
