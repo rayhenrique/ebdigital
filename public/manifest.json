@@ -4,11 +4,18 @@
   "description": "Sistema de Gestão e Caderneta da Escola Bíblica Dominical",
   "lang": "pt-BR",
   "dir": "ltr",
+  "id": "/?source=pwa",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
   "orientation": "portrait",
+  "categories": [
+    "education",
+    "lifestyle",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -58,6 +65,22 @@
       "type": "image/png",
       "form_factor": "wide",
       "label": "Visão Consolidada no Computador"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Fazer Chamada",
+      "short_name": "Chamada",
+      "description": "Lançar presença da classe",
+      "url": "/chamada",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard Geral",
+      "short_name": "Dashboard",
+      "description": "Acompanhar métricas consolidadas da EBD",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
 }
