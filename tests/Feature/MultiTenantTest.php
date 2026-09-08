@@ -134,6 +134,30 @@ class MultiTenantTest extends TestCase
         ]);
         $storeResponse->assertRedirect(route('classes.index'));
         $storeResponse->assertSessionHas('warning', 'Selecione uma congregação para criar uma turma.');
+
+        // CRUD completo desativado em modo "todas as congregações"
+        $classToTest = EbdClass::first();
+        $this->get(route('classes.edit', $classToTest))
+            ->assertRedirect(route('classes.index'))
+            ->assertSessionHas('warning');
+
+        $this->put(route('classes.update', $classToTest), ['name' => 'Tentativa'])
+            ->assertRedirect(route('classes.index'))
+            ->assertSessionHas('warning');
+
+        $this->patch(route('classes.toggle', $classToTest))
+            ->assertRedirect(route('classes.index'))
+            ->assertSessionHas('warning');
+
+        $this->delete(route('classes.destroy', $classToTest))
+            ->assertRedirect(route('classes.index'))
+            ->assertSessionHas('warning');
+
+        // Na listagem geral, exibe o alerta visual de modo geral (somente leitura)
+        $indexResponse = $this->get(route('classes.index'));
+        $indexResponse->assertOk();
+        $indexResponse->assertSee('Modo Geral (Somente Leitura)');
+        $indexResponse->assertSee('Somente leitura');
     }
 
     public function test_secretario_can_manage_teachers_only_for_own_congregation(): void

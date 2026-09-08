@@ -21,15 +21,18 @@ class CrudDestroyTest extends TestCase
     {
         $admin = User::factory()->create([
             'role' => UserRole::ADMIN,
+            'congregation_id' => 1,
             'is_active' => true,
         ]);
 
         $class = EbdClass::create([
             'name' => 'Turma Teste',
+            'congregation_id' => 1,
             'is_active' => true,
         ]);
 
         $response = $this->actingAs($admin)
+            ->withSession(['selected_congregation_id' => 1])
             ->delete(route('classes.destroy', $class));
 
         $response->assertRedirect(route('classes.index'));
@@ -40,11 +43,13 @@ class CrudDestroyTest extends TestCase
     {
         $admin = User::factory()->create([
             'role' => UserRole::ADMIN,
+            'congregation_id' => 1,
             'is_active' => true,
         ]);
 
         $class = EbdClass::create([
             'name' => 'Turma Com Alunos',
+            'congregation_id' => 1,
             'is_active' => true,
         ]);
 
@@ -55,6 +60,7 @@ class CrudDestroyTest extends TestCase
         ]);
 
         $response = $this->actingAs($admin)
+            ->withSession(['selected_congregation_id' => 1])
             ->delete(route('classes.destroy', $class));
 
         $response->assertSessionHas('error');

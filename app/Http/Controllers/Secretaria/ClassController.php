@@ -20,9 +20,16 @@ use Illuminate\View\View;
 
 class ClassController extends Controller
 {
+    public function __construct(
+        protected TenantService $tenantService
+    ) {}
+
     public function index(Request $request): View
     {
-        $query = EbdClass::query()->withCount(['students', 'teachers'])->orderBy('name');
+        $query = EbdClass::query()
+            ->with(['congregation', 'teachers'])
+            ->withCount(['students', 'teachers'])
+            ->orderBy('name');
 
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
@@ -38,18 +45,18 @@ class ClassController extends Controller
         return view('secretaria.classes.index', [
             'turmas' => $classes,
             'classes' => $classes,
+            'isAllCongregations' => $this->tenantService->isAllCongregations(),
         ]);
     }
 
     public function create(): View|RedirectResponse
     {
-        $tenantService = app(TenantService::class);
-        $congregationId = $tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
-
-        if (! $congregationId) {
+        if ($this->tenantService->isAllCongregations()) {
             return redirect()->route('classes.index')
                 ->with('warning', 'Selecione uma congregação para criar uma turma.');
         }
+
+        $congregationId = $this->tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
 
         $teachers = User::where('role', UserRole::PROFESSOR)
             ->where('is_active', true)
@@ -59,19 +66,18 @@ class ClassController extends Controller
 
         return view('secretaria.classes.create', [
             'teachers' => $teachers,
-            'congregation' => $tenantService->getCongregation(),
+            'congregation' => $this->tenantService->getCongregation(),
         ]);
     }
 
     public function store(StoreClassRequest $request): RedirectResponse
     {
-        $tenantService = app(TenantService::class);
-        $congregationId = $tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
-
-        if (! $congregationId) {
+        if ($this->tenantService->isAllCongregations()) {
             return redirect()->route('classes.index')
                 ->with('warning', 'Selecione uma congregação para criar uma turma.');
         }
+
+        $congregationId = $this->tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
 
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active', true);
@@ -103,8 +109,13 @@ class ClassController extends Controller
         return redirect()->route('classes.index')->with('success', "Classe {$class->name} criada com sucesso!");
     }
 
-    public function edit(EbdClass $class): View
+    public function edit(EbdClass $class): View|RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('classes.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder editar turmas.');
+        }
+
         $class->load('teachers');
 
         $teachersQuery = User::where('role', UserRole::PROFESSOR)
@@ -126,6 +137,11 @@ class ClassController extends Controller
 
     public function update(UpdateClassRequest $request, EbdClass $class): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('classes.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder editar turmas.');
+        }
+
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active');
         $teacherIds = $validated['teacher_ids'] ?? [];
@@ -165,6 +181,11 @@ class ClassController extends Controller
 
     public function toggleActive(EbdClass $class): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('classes.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder alterar o status da turma.');
+        }
+
         $oldStatus = $class->is_active;
         $class->is_active = !$oldStatus;
         $class->save();
@@ -183,6 +204,11 @@ class ClassController extends Controller
 
     public function destroy(EbdClass $class): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('classes.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder excluir turmas.');
+        }
+
         if ($class->students()->exists()) {
             $count = $class->students()->count();
             return redirect()->back()->with('error', "A classe '{$class->name}' possui {$count} aluno(s) cadastrado(s) e não pode ser excluída diretamente. Remova ou transfira os alunos primeiro.");

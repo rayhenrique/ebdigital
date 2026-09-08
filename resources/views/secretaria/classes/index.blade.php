@@ -7,17 +7,41 @@
                 </h2>
                 <p class="text-xs text-gray-500 mt-0.5">Gerenciamento de turmas e atribuição de professores.</p>
             </div>
-            <a 
-                href="{{ route('classes.create') }}" 
-                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-md shadow-indigo-100 min-h-[48px]"
-            >
-                + Nova Classe
-            </a>
+            @if($isAllCongregations)
+                <div class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200 cursor-not-allowed select-none" title="Selecione uma congregação no menu para criar uma turma">
+                    <span>🔒</span>
+                    <span>+ Nova Classe</span>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">Selecione uma Congregação</span>
+                </div>
+            @else
+                <a 
+                    href="{{ route('classes.create') }}" 
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-md shadow-indigo-100 min-h-[48px]"
+                >
+                    + Nova Classe
+                </a>
+            @endif
         </div>
     </x-slot>
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            @if($isAllCongregations)
+                <div class="mb-6 p-4 rounded-2xl bg-amber-50/90 border border-amber-200/80 flex items-start sm:items-center justify-between gap-4 shadow-xs">
+                    <div class="flex items-start sm:items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl shrink-0">
+                            🌐
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-amber-950 uppercase tracking-wider">Modo Geral (Somente Leitura)</h4>
+                            <p class="text-xs text-amber-800 mt-0.5">
+                                Você está visualizando as classes de <strong>Todas as Congregações</strong>. Para criar, editar, alterar status ou excluir turmas, selecione uma congregação específica no seletor do menu lateral.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <!-- Filtros -->
             <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mb-6">
@@ -52,7 +76,14 @@
                         <div class="p-4 space-y-3">
                             <div class="flex items-start justify-between gap-2">
                                 <div>
-                                    <h3 class="font-bold text-gray-900 text-base leading-tight">{{ $c->name }}</h3>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 class="font-bold text-gray-900 text-base leading-tight">{{ $c->name }}</h3>
+                                        @if($isAllCongregations)
+                                            <span class="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200/60 px-2 py-0.5 rounded-md">
+                                                ⛪ {{ $c->congregation?->name ?? 'Templo Sede' }}
+                                            </span>
+                                        @endif
+                                    </div>
                                     <p class="text-xs text-gray-500 mt-0.5">{{ $c->description ?? 'Sem descrição' }}</p>
                                 </div>
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold shrink-0 {{ $c->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500' }}">
@@ -75,34 +106,40 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-3 gap-2 pt-1">
-                                <a 
-                                    href="{{ route('classes.edit', $c) }}" 
-                                    class="flex items-center justify-center px-2 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-bold hover:bg-indigo-100 min-h-[44px]"
-                                >
-                                    Editar
-                                </a>
-                                <form method="POST" action="{{ route('classes.toggle', $c) }}" class="w-full">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button 
-                                        type="submit" 
-                                        class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl text-xs font-bold min-h-[44px] {{ $c->is_active ? 'border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}"
+                            @if($isAllCongregations)
+                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 text-center text-xs font-semibold text-slate-400 flex items-center justify-center gap-1.5">
+                                    <span>🔒</span> Somente leitura no modo geral
+                                </div>
+                            @else
+                                <div class="grid grid-cols-3 gap-2 pt-1">
+                                    <a 
+                                        href="{{ route('classes.edit', $c) }}" 
+                                        class="flex items-center justify-center px-2 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-bold hover:bg-indigo-100 min-h-[44px]"
                                     >
-                                        {{ $c->is_active ? 'Desativar' : 'Ativar' }}
-                                    </button>
-                                </form>
-                                <form method="POST" action="{{ route('classes.destroy', $c) }}" class="w-full" onsubmit="return confirm('Deseja realmente excluir a classe \'{{ addslashes($c->name) }}\'? Esta ação é irreversível.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button 
-                                        type="submit" 
-                                        class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold hover:bg-rose-100 min-h-[44px] cursor-pointer"
-                                    >
-                                        Excluir
-                                    </button>
-                                </form>
-                            </div>
+                                        Editar
+                                    </a>
+                                    <form method="POST" action="{{ route('classes.toggle', $c) }}" class="w-full">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button 
+                                            type="submit" 
+                                            class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl text-xs font-bold min-h-[44px] {{ $c->is_active ? 'border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}"
+                                        >
+                                            {{ $c->is_active ? 'Desativar' : 'Ativar' }}
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('classes.destroy', $c) }}" class="w-full" onsubmit="return confirm('Deseja realmente excluir a classe \'{{ addslashes($c->name) }}\'? Esta ação é irreversível.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button 
+                                            type="submit" 
+                                            class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold hover:bg-rose-100 min-h-[44px] cursor-pointer"
+                                        >
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
                         </div>
                     @empty
                         <div class="p-8 text-center text-gray-500 text-sm">
@@ -117,6 +154,9 @@
                         <thead class="bg-gray-50 text-gray-500 uppercase text-[11px] font-bold tracking-wider">
                             <tr>
                                 <th class="px-6 py-3.5">Nome / Descrição</th>
+                                @if($isAllCongregations)
+                                    <th class="px-4 py-3.5">Congregação</th>
+                                @endif
                                 <th class="px-4 py-3.5">Professores Vinculados</th>
                                 <th class="px-4 py-3.5 text-center">Alunos Ativos</th>
                                 <th class="px-4 py-3.5 text-center">Status</th>
@@ -130,6 +170,14 @@
                                         <div class="font-bold text-gray-900">{{ $c->name }}</div>
                                         <div class="text-xs text-gray-400">{{ $c->description ?? 'Sem descrição' }}</div>
                                     </td>
+                                    @if($isAllCongregations)
+                                        <td class="px-4 py-4">
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-800 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-lg">
+                                                <span>⛪</span>
+                                                <span>{{ $c->congregation?->name ?? 'Templo Sede' }}</span>
+                                            </span>
+                                        </td>
+                                    @endif
                                     <td class="px-4 py-4">
                                         @if($c->teachers->isNotEmpty())
                                             <div class="text-xs font-medium text-gray-700">
@@ -147,29 +195,37 @@
                                             {{ $c->is_active ? 'Ativa' : 'Inativa' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-right space-x-2">
-                                        <a href="{{ route('classes.edit', $c) }}" class="inline-block text-xs font-bold text-indigo-600 hover:text-indigo-800 p-2">
-                                            Editar
-                                        </a>
-                                        <form method="POST" action="{{ route('classes.toggle', $c) }}" class="inline-block">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="text-xs font-semibold {{ $c->is_active ? 'text-amber-600 hover:text-amber-800' : 'text-emerald-600 hover:text-emerald-800' }} p-2">
-                                                {{ $c->is_active ? 'Desativar' : 'Ativar' }}
-                                            </button>
-                                        </form>
-                                        <form method="POST" action="{{ route('classes.destroy', $c) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir a classe \'{{ addslashes($c->name) }}\'?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-xs font-semibold text-rose-600 hover:text-rose-800 p-2 cursor-pointer">
-                                                Excluir
-                                            </button>
-                                        </form>
+                                    <td class="px-6 py-4 text-right">
+                                        @if($isAllCongregations)
+                                            <span class="inline-flex items-center gap-1 text-xs font-medium text-slate-400 italic">
+                                                <span>🔒</span> Somente leitura
+                                            </span>
+                                        @else
+                                            <div class="inline-flex items-center gap-2">
+                                                <a href="{{ route('classes.edit', $c) }}" class="inline-block text-xs font-bold text-indigo-600 hover:text-indigo-800 p-2">
+                                                    Editar
+                                                </a>
+                                                <form method="POST" action="{{ route('classes.toggle', $c) }}" class="inline-block">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="text-xs font-semibold {{ $c->is_active ? 'text-amber-600 hover:text-amber-800' : 'text-emerald-600 hover:text-emerald-800' }} p-2">
+                                                        {{ $c->is_active ? 'Desativar' : 'Ativar' }}
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="{{ route('classes.destroy', $c) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir a classe \'{{ addslashes($c->name) }}\'?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-xs font-semibold text-rose-600 hover:text-rose-800 p-2 cursor-pointer">
+                                                        Excluir
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                                    <td colspan="{{ $isAllCongregations ? 6 : 5 }}" class="px-6 py-10 text-center text-gray-500">
                                         Nenhuma classe encontrada.
                                     </td>
                                 </tr>
