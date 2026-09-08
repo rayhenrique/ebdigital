@@ -60,8 +60,15 @@ class TeacherController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        $congregationId = $this->tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
+
+        if (! $congregationId) {
+            return redirect()->route('professores.index')
+                ->with('warning', 'Selecione uma congregação para cadastrar um professor.');
+        }
+
         $classes = EbdClass::active()->orderBy('name')->get();
 
         return view('secretaria.teachers.create', [
@@ -75,8 +82,12 @@ class TeacherController extends Controller
         $validated = $request->validated();
         $user = Auth::user();
 
-        // Garante a vinculação correta da congregação
-        $congregationId = $this->tenantService->getCongregationId() ?? $user->congregation_id ?? 1;
+        $congregationId = $this->tenantService->getCongregationId() ?? $user->congregation_id;
+
+        if (! $congregationId) {
+            return redirect()->route('professores.index')
+                ->with('warning', 'Selecione uma congregação para cadastrar um professor.');
+        }
 
         $classIds = $validated['class_ids'] ?? [];
 

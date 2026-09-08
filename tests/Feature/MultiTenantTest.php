@@ -122,6 +122,18 @@ class MultiTenantTest extends TestCase
             'congregation_id' => 'all',
         ]);
         $this->assertEquals(2, EbdClass::count());
+
+        // Ao tentar criar classe sem congregação selecionada, deve redirecionar com aviso amigável
+        $createResponse = $this->get(route('classes.create'));
+        $createResponse->assertRedirect(route('classes.index'));
+        $createResponse->assertSessionHas('warning', 'Selecione uma congregação para criar uma turma.');
+
+        // E ao tentar salvar via POST também é barrado com aviso
+        $storeResponse = $this->post(route('classes.store'), [
+            'name' => 'Classe Sem Congregacao',
+        ]);
+        $storeResponse->assertRedirect(route('classes.index'));
+        $storeResponse->assertSessionHas('warning', 'Selecione uma congregação para criar uma turma.');
     }
 
     public function test_secretario_can_manage_teachers_only_for_own_congregation(): void

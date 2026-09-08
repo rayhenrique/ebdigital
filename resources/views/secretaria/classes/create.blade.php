@@ -1,9 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <h2 class="font-bold text-xl text-gray-900 leading-tight">
-                Nova Classe / Turma
-            </h2>
+            <div>
+                <h2 class="font-bold text-xl text-gray-900 leading-tight">
+                    Nova Classe / Turma
+                </h2>
+                @if(isset($congregation) && $congregation)
+                    <p class="text-xs text-blue-600 font-semibold mt-0.5">
+                        ⛪ Congregação: <span class="font-bold text-blue-800">{{ $congregation->name }}</span>
+                    </p>
+                @endif
+            </div>
             <a href="{{ route('classes.index') }}" class="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-800 py-1 self-start sm:self-auto min-h-[44px]">
                 &larr; Voltar
             </a>

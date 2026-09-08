@@ -11,8 +11,10 @@ use App\Http\Requests\UpdateClassRequest;
 use App\Models\EbdClass;
 use App\Models\User;
 use App\Services\AuditService;
+use App\Services\TenantService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -39,34 +41,45 @@ class ClassController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
-        $tenantService = app(\App\Services\TenantService::class);
+        $tenantService = app(TenantService::class);
         $congregationId = $tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
 
-        $teachersQuery = User::where('role', UserRole::PROFESSOR)
-            ->where('is_active', true)
-            ->orderBy('name');
-
-        if ($congregationId) {
-            $teachersQuery->where('congregation_id', $congregationId);
+        if (! $congregationId) {
+            return redirect()->route('classes.index')
+                ->with('warning', 'Selecione uma congregação para criar uma turma.');
         }
 
-        $teachers = $teachersQuery->get();
+        $teachers = User::where('role', UserRole::PROFESSOR)
+            ->where('is_active', true)
+            ->where('congregation_id', $congregationId)
+            ->orderBy('name')
+            ->get();
 
         return view('secretaria.classes.create', [
             'teachers' => $teachers,
+            'congregation' => $tenantService->getCongregation(),
         ]);
     }
 
     public function store(StoreClassRequest $request): RedirectResponse
     {
+        $tenantService = app(TenantService::class);
+        $congregationId = $tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
+
+        if (! $congregationId) {
+            return redirect()->route('classes.index')
+                ->with('warning', 'Selecione uma congregação para criar uma turma.');
+        }
+
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active', true);
         $teacherIds = $validated['teacher_ids'] ?? [];
 
-        $class = DB::transaction(function () use ($validated, $teacherIds) {
+        $class = DB::transaction(function () use ($validated, $teacherIds, $congregationId) {
             $class = EbdClass::create([
+                'congregation_id' => $congregationId,
                 'name' => $validated['name'],
                 'description' => $validated['description'] ?? null,
                 'is_active' => $validated['is_active'],
@@ -84,7 +97,7 @@ class ClassController extends Controller
             EbdClass::class,
             $class->id,
             null,
-            ['name' => $class->name, 'teachers_count' => count($teacherIds)]
+            ['name' => $class->name, 'teachers_count' => count($teacherIds), 'congregation_id' => $congregationId]
         );
 
         return redirect()->route('classes.index')->with('success', "Classe {$class->name} criada com sucesso!");

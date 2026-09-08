@@ -18,11 +18,6 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="mb-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium flex items-center gap-2">
-                    <span>✓</span> {{ session('success') }}
-                </div>
-            @endif
 
             <!-- Filtros -->
             <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mb-6">

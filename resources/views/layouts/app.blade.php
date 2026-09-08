@@ -57,6 +57,37 @@
                     </header>
                 @endisset
 
+                <!-- Mensagens Flash Globais -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-4 empty:hidden">
+                    @if(session('success'))
+                        <div class="mb-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-sm font-semibold flex items-center gap-3 shadow-xs">
+                            <span class="text-base">✓</span>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                    @endif
+
+                    @if(session('warning'))
+                        <div class="mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-900 text-sm font-semibold flex items-center gap-3 shadow-xs">
+                            <span class="text-base">⚠️</span>
+                            <span>{{ session('warning') }}</span>
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="mb-4 p-4 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-900 text-sm font-semibold flex items-center gap-3 shadow-xs">
+                            <span class="text-base">⛔</span>
+                            <span>{{ session('error') }}</span>
+                        </div>
+                    @endif
+
+                    @if(session('info'))
+                        <div class="mb-4 p-4 rounded-2xl bg-blue-50 border border-blue-200/80 text-blue-900 text-sm font-semibold flex items-center gap-3 shadow-xs">
+                            <span class="text-base">ℹ️</span>
+                            <span>{{ session('info') }}</span>
+                        </div>
+                    @endif
+                </div>
+
                 <!-- Conteúdo da Página (pb-24 no mobile evita sobreposição com o menu inferior) -->
                 <main class="flex-1 pb-24 md:pb-12">
                     {{ $slot }}
