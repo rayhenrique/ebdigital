@@ -45,13 +45,21 @@
             {{ $slot }}
         </div>
 
-        <!-- Rodapé Público com Link de Política de Privacidade (Google Play Requirement) -->
-        <footer class="mt-6 text-center text-xs text-slate-400">
-            <a href="{{ route('privacy.policy') }}" class="text-slate-500 hover:text-blue-600 font-medium underline underline-offset-2 transition-colors">
-                Política de Privacidade
-            </a>
-            <span class="mx-2 text-slate-300">•</span>
-            <span>Assembleia de Deus — Teotônio Vilela/AL</span>
+        <!-- Rodapé Público com Link de Política de Privacidade & Desenvolvedor -->
+        <footer class="mt-6 text-center text-xs text-slate-400 space-y-1.5">
+            <div>
+                <a href="{{ route('privacy.policy') }}" class="text-slate-500 hover:text-blue-600 font-medium underline underline-offset-2 transition-colors">
+                    Política de Privacidade
+                </a>
+                <span class="mx-2 text-slate-300">•</span>
+                <span class="text-slate-500">Assembleia de Deus — Teotônio Vilela/AL</span>
+            </div>
+            <div class="text-[11px] text-slate-400">
+                Desenvolvido por 
+                <a href="https://kltecnologia.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors">
+                    KL Tecnologia
+                </a>
+            </div>
         </footer>
     </body>
 </html>

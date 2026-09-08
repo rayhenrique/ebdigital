@@ -45,4 +45,14 @@ class ExampleTest extends TestCase
         $this->get('/privacidade')->assertStatus(200);
         $this->get('/privacy-policy')->assertStatus(200);
     }
+
+    public function test_login_screen_contains_privacy_policy_and_developer_link(): void
+    {
+        $response = $this->get('/login');
+
+        $response->assertStatus(200);
+        $response->assertSee('Política de Privacidade');
+        $response->assertSee('KL Tecnologia');
+        $response->assertSee('https://kltecnologia.com');
+    }
 }
