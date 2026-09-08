@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateStudentRequest;
 use App\Models\EbdClass;
 use App\Models\Student;
 use App\Services\AuditService;
+use App\Services\TenantService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,9 +18,15 @@ use Illuminate\View\View;
 
 class StudentController extends Controller
 {
+    public function __construct(
+        protected TenantService $tenantService
+    ) {}
+
     public function index(Request $request): View
     {
-        $query = Student::query()->with('ebdClass')->orderBy('name');
+        $query = Student::query()
+            ->with(['ebdClass', 'congregation'])
+            ->orderBy('name');
 
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
@@ -44,11 +51,17 @@ class StudentController extends Controller
             'students' => $students,
             'turmas' => $classes,
             'classes' => $classes,
+            'isAllCongregations' => $this->tenantService->isAllCongregations(),
         ]);
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('alunos.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder cadastrar alunos.');
+        }
+
         $classes = EbdClass::active()->orderBy('name')->get();
 
         return view('secretaria.students.create', [
@@ -59,6 +72,11 @@ class StudentController extends Controller
 
     public function store(StoreStudentRequest $request): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('alunos.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder cadastrar alunos.');
+        }
+
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active', true);
 
@@ -78,8 +96,13 @@ class StudentController extends Controller
         return redirect()->route('alunos.index')->with('success', "Aluno {$student->name} cadastrado com sucesso!");
     }
 
-    public function edit(Student $aluno): View
+    public function edit(Student $aluno): View|RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('alunos.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder editar alunos.');
+        }
+
         $classes = EbdClass::active()->orderBy('name')->get();
 
         return view('secretaria.students.edit', [
@@ -91,6 +114,11 @@ class StudentController extends Controller
 
     public function update(UpdateStudentRequest $request, Student $aluno): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('alunos.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder editar alunos.');
+        }
+
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active');
 
@@ -132,6 +160,11 @@ class StudentController extends Controller
 
     public function toggleActive(Student $aluno): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('alunos.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder alterar o status do aluno.');
+        }
+
         $oldStatus = $aluno->is_active;
         $aluno->is_active = !$oldStatus;
         $aluno->save();
@@ -150,6 +183,11 @@ class StudentController extends Controller
 
     public function destroy(Student $aluno): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('alunos.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder excluir alunos.');
+        }
+
         if ($aluno->attendances()->exists()) {
             return redirect()->back()->with('error', "O aluno '{$aluno->name}' possui presenças registradas em chamadas e não pode ser excluído para não corromper o histórico. Desative o aluno para arquivá-lo.");
         }

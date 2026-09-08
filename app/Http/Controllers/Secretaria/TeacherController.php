@@ -57,16 +57,22 @@ class TeacherController extends Controller
         return view('secretaria.teachers.index', [
             'teachers' => $teachers,
             'currentCongregation' => $this->tenantService->getCongregation(),
+            'isAllCongregations' => $this->tenantService->isAllCongregations(),
         ]);
     }
 
     public function create(): View|RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('professores.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder cadastrar professores.');
+        }
+
         $congregationId = $this->tenantService->getCongregationId() ?? Auth::user()?->congregation_id;
 
         if (! $congregationId) {
             return redirect()->route('professores.index')
-                ->with('warning', 'Selecione uma congregação para cadastrar um professor.');
+                ->with('warning', 'Selecione uma congregação no menu para poder cadastrar professores.');
         }
 
         $classes = EbdClass::active()->orderBy('name')->get();
@@ -79,6 +85,11 @@ class TeacherController extends Controller
 
     public function store(StoreTeacherRequest $request): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('professores.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder cadastrar professores.');
+        }
+
         $validated = $request->validated();
         $user = Auth::user();
 
@@ -86,7 +97,7 @@ class TeacherController extends Controller
 
         if (! $congregationId) {
             return redirect()->route('professores.index')
-                ->with('warning', 'Selecione uma congregação para cadastrar um professor.');
+                ->with('warning', 'Selecione uma congregação no menu para poder cadastrar professores.');
         }
 
         $classIds = $validated['class_ids'] ?? [];
@@ -120,8 +131,13 @@ class TeacherController extends Controller
             ->with('success', "Professor {$teacher->name} cadastrado com sucesso!");
     }
 
-    public function edit(User $professor): View
+    public function edit(User $professor): View|RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('professores.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder editar professores.');
+        }
+
         $this->authorizeTeacherAccess($professor);
 
         $professor->load('teachingClasses');
@@ -136,6 +152,11 @@ class TeacherController extends Controller
 
     public function update(UpdateTeacherRequest $request, User $professor): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('professores.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder editar professores.');
+        }
+
         $this->authorizeTeacherAccess($professor);
 
         $validated = $request->validated();
@@ -176,6 +197,11 @@ class TeacherController extends Controller
 
     public function toggleActive(User $professor): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('professores.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder alterar o status do professor.');
+        }
+
         $this->authorizeTeacherAccess($professor);
 
         $professor->is_active = ! $professor->is_active;
@@ -195,6 +221,11 @@ class TeacherController extends Controller
 
     public function resetPassword(Request $request, User $professor): RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('professores.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder redefinir a senha do professor.');
+        }
+
         $this->authorizeTeacherAccess($professor);
 
         $request->validate([

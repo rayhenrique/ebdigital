@@ -303,4 +303,145 @@ class MultiTenantTest extends TestCase
 
         $this->assertEquals($canaa->id, $record->fresh()->congregation_id);
     }
+
+    public function test_students_crud_is_disabled_in_all_congregations_mode(): void
+    {
+        $sede = Congregation::where('is_headquarters', true)->first() ?? Congregation::create([
+            'name' => 'Templo Sede',
+            'slug' => 'sede-student-lock',
+            'is_headquarters' => true,
+        ]);
+
+        $admin = User::factory()->create([
+            'role' => UserRole::ADMIN,
+            'congregation_id' => null,
+            'is_active' => true,
+        ]);
+
+        $class = EbdClass::create([
+            'congregation_id' => $sede->id,
+            'name' => 'Classe Teste Alunos',
+            'is_active' => true,
+        ]);
+
+        $student = Student::create([
+            'congregation_id' => $sede->id,
+            'class_id' => $class->id,
+            'name' => 'Aluno Bloqueio Geral',
+            'is_active' => true,
+        ]);
+
+        // Sem congregação na sessão (Modo Todas as Congregações)
+        $this->actingAs($admin);
+
+        // Tela de listagem exibe avisos de modo somente leitura
+        $indexRes = $this->get(route('alunos.index'));
+        $indexRes->assertOk();
+        $indexRes->assertSee('Modo Geral (Somente Leitura)');
+        $indexRes->assertSee('Somente leitura');
+        $indexRes->assertSee('Selecione uma Congregação');
+
+        // Create barrado
+        $this->get(route('alunos.create'))
+            ->assertRedirect(route('alunos.index'))
+            ->assertSessionHas('warning');
+
+        // Store barrado
+        $this->post(route('alunos.store'), [
+            'name' => 'Aluno Invalido',
+            'class_id' => $class->id,
+        ])->assertRedirect(route('alunos.index'))
+          ->assertSessionHas('warning');
+
+        // Edit barrado
+        $this->get(route('alunos.edit', $student))
+            ->assertRedirect(route('alunos.index'))
+            ->assertSessionHas('warning');
+
+        // Update barrado
+        $this->put(route('alunos.update', $student), [
+            'name' => 'Aluno Nome Alterado',
+            'class_id' => $class->id,
+        ])->assertRedirect(route('alunos.index'))
+          ->assertSessionHas('warning');
+
+        // Toggle barrado
+        $this->patch(route('alunos.toggle', $student))
+            ->assertRedirect(route('alunos.index'))
+            ->assertSessionHas('warning');
+
+        // Destroy barrado
+        $this->delete(route('alunos.destroy', $student))
+            ->assertRedirect(route('alunos.index'))
+            ->assertSessionHas('warning');
+    }
+
+    public function test_teachers_crud_is_disabled_in_all_congregations_mode(): void
+    {
+        $sede = Congregation::where('is_headquarters', true)->first() ?? Congregation::create([
+            'name' => 'Templo Sede',
+            'slug' => 'sede-teacher-lock',
+            'is_headquarters' => true,
+        ]);
+
+        $admin = User::factory()->create([
+            'role' => UserRole::ADMIN,
+            'congregation_id' => null,
+            'is_active' => true,
+        ]);
+
+        $teacher = User::factory()->create([
+            'role' => UserRole::PROFESSOR,
+            'congregation_id' => $sede->id,
+            'name' => 'Professor Bloqueio Geral',
+            'email' => 'prof.lock@ebd.local',
+            'is_active' => true,
+        ]);
+
+        // Sem congregação na sessão (Modo Todas as Congregações)
+        $this->actingAs($admin);
+
+        // Tela de listagem exibe avisos de modo somente leitura
+        $indexRes = $this->get(route('professores.index'));
+        $indexRes->assertOk();
+        $indexRes->assertSee('Modo Geral (Somente Leitura)');
+        $indexRes->assertSee('Somente leitura');
+        $indexRes->assertSee('Selecione uma Congregação');
+
+        // Create barrado
+        $this->get(route('professores.create'))
+            ->assertRedirect(route('professores.index'))
+            ->assertSessionHas('warning');
+
+        // Store barrado
+        $this->post(route('professores.store'), [
+            'name' => 'Professor Invalido',
+            'email' => 'invalido@ebd.local',
+            'password' => 'senha123',
+        ])->assertRedirect(route('professores.index'))
+          ->assertSessionHas('warning');
+
+        // Edit barrado
+        $this->get(route('professores.edit', $teacher))
+            ->assertRedirect(route('professores.index'))
+            ->assertSessionHas('warning');
+
+        // Update barrado
+        $this->put(route('professores.update', $teacher), [
+            'name' => 'Professor Nome Alterado',
+            'email' => $teacher->email,
+        ])->assertRedirect(route('professores.index'))
+          ->assertSessionHas('warning');
+
+        // Toggle barrado
+        $this->patch(route('professores.toggle', $teacher))
+            ->assertRedirect(route('professores.index'))
+            ->assertSessionHas('warning');
+
+        // Reset password barrado
+        $this->patch(route('professores.reset-password', $teacher), [
+            'password' => 'novasenha123',
+        ])->assertRedirect(route('professores.index'))
+          ->assertSessionHas('warning');
+    }
 }

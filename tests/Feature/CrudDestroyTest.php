@@ -71,21 +71,25 @@ class CrudDestroyTest extends TestCase
     {
         $admin = User::factory()->create([
             'role' => UserRole::ADMIN,
+            'congregation_id' => 1,
             'is_active' => true,
         ]);
 
         $class = EbdClass::create([
             'name' => 'Classe Primários',
+            'congregation_id' => 1,
             'is_active' => true,
         ]);
 
         $student = Student::create([
             'class_id' => $class->id,
+            'congregation_id' => 1,
             'name' => 'Aluno Sem Frequência',
             'is_active' => true,
         ]);
 
         $response = $this->actingAs($admin)
+            ->withSession(['selected_congregation_id' => 1])
             ->delete(route('alunos.destroy', $student));
 
         $response->assertRedirect(route('alunos.index'));
@@ -96,22 +100,26 @@ class CrudDestroyTest extends TestCase
     {
         $admin = User::factory()->create([
             'role' => UserRole::ADMIN,
+            'congregation_id' => 1,
             'is_active' => true,
         ]);
 
         $class = EbdClass::create([
             'name' => 'Classe Juvenis',
+            'congregation_id' => 1,
             'is_active' => true,
         ]);
 
         $student = Student::create([
             'class_id' => $class->id,
+            'congregation_id' => 1,
             'name' => 'Aluno Com Frequência',
             'is_active' => true,
         ]);
 
         $record = LessonRecord::create([
             'class_id' => $class->id,
+            'congregation_id' => 1,
             'registered_by' => $admin->id,
             'lesson_date' => now()->format('Y-m-d'),
         ]);
@@ -123,6 +131,7 @@ class CrudDestroyTest extends TestCase
         ]);
 
         $response = $this->actingAs($admin)
+            ->withSession(['selected_congregation_id' => 1])
             ->delete(route('alunos.destroy', $student));
 
         $response->assertSessionHas('error');
