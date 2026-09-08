@@ -65,3 +65,9 @@
 - [x] 10.2 Persistência e Auto-detecção Responsiva: Detecção automática do modo recolhido para tablets em orientação vertical (`< 1024px`) e persistência da preferência do usuário via `localStorage` (`ebd_sidebar_collapsed`).
 - [x] 10.3 Acessibilidade e UX Touch: Botões de alternar recolher/expandir no cabeçalho e rodapé da barra lateral, com touch targets adequados (44px) e tooltips nativos em todos os itens.
 - [x] 10.4 Estilização Refinada: Barra de rolagem suave e fina (`sidebar-scroll`), alinhamento centralizado de avatares/ícones e adaptação do indicador de congregação ativa no modo recolhido.
+
+## Fase 11: Conformidade Google Play & Identidade Visual
+- [x] 11.1 Política de Privacidade Oficial (`/politica-de-privacidade`) com dados do app (`br.com.adteotoniovilela.cadernetaebd`) e desenvolvedor (Ray Henrique) em total conformidade com a Google Play.
+- [x] 11.2 Links de navegação pública e interna para a Política de Privacidade (tela de login, sidebar desktop e gaveta mobile).
+- [x] 11.3 Créditos do Desenvolvedor: Link oficial no rodapé da tela de login apontando para a KL Tecnologia (`https://kltecnologia.com`).
+
