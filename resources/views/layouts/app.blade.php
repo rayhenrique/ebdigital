@@ -36,7 +36,16 @@
         @livewireStyles
     </head>
     <body 
-        x-data="{ mobileSidebarOpen: false }" 
+        x-data="{ 
+            mobileSidebarOpen: false,
+            sidebarCollapsed: localStorage.getItem('ebd_sidebar_collapsed') !== null 
+                ? localStorage.getItem('ebd_sidebar_collapsed') === 'true' 
+                : window.innerWidth < 1024,
+            toggleSidebar() {
+                this.sidebarCollapsed = !this.sidebarCollapsed;
+                localStorage.setItem('ebd_sidebar_collapsed', this.sidebarCollapsed);
+            }
+        }" 
         class="font-sans antialiased bg-slate-50 text-slate-800 selection:bg-blue-600 selection:text-white"
     >
         <!-- Barra de Progresso Superior de Navegação (Feedback Instantâneo) -->

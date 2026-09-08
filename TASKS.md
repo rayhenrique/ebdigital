@@ -60,4 +60,8 @@
 - [x] 9.5 Módulo de Gestão de Professores: Controller `TeacherController`, Form Requests, rotas `/professores` e views Blade permitindo ao Secretário/Superintendente cadastrar, editar, ativar/inativar e resetar senha dos professores da sua própria congregação com isolamento total.
 - [x] 9.6 Atualização dos Módulos Existentes: Escopo aplicado em Usuários, Classes, Alunos, Chamada (`TakeAttendance`), Dashboard e Relatórios (`EbdReports`).
 - [x] 9.7 Seeders & Testes Automatizados: Migração inicial e testes no `MultiTenantTest` garantindo 100% de cobertura e integridade (55 testes passando).
-
+## Fase 10: Otimização de Interface & Sidebar Recolhível (Tablet/Desktop)
+- [x] 10.1 Sidebar com Modo Recolhível (Collapse): Transição dinâmica entre largura total (`w-[268px] lg:w-72`) e modo compacto (`w-20`) com apenas ícones.
+- [x] 10.2 Persistência e Auto-detecção Responsiva: Detecção automática do modo recolhido para tablets em orientação vertical (`< 1024px`) e persistência da preferência do usuário via `localStorage` (`ebd_sidebar_collapsed`).
+- [x] 10.3 Acessibilidade e UX Touch: Botões de alternar recolher/expandir no cabeçalho e rodapé da barra lateral, com touch targets adequados (44px) e tooltips nativos em todos os itens.
+- [x] 10.4 Estilização Refinada: Barra de rolagem suave e fina (`sidebar-scroll`), alinhamento centralizado de avatares/ícones e adaptação do indicador de congregação ativa no modo recolhido.
