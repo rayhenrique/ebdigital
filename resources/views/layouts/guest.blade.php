@@ -44,5 +44,14 @@
         <div class="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/70 border border-slate-100 p-6 sm:p-8 transition-all">
             {{ $slot }}
         </div>
+
+        <!-- Rodapé Público com Link de Política de Privacidade (Google Play Requirement) -->
+        <footer class="mt-6 text-center text-xs text-slate-400">
+            <a href="{{ route('privacy.policy') }}" class="text-slate-500 hover:text-blue-600 font-medium underline underline-offset-2 transition-colors">
+                Política de Privacidade
+            </a>
+            <span class="mx-2 text-slate-300">•</span>
+            <span>Assembleia de Deus — Teotônio Vilela/AL</span>
+        </footer>
     </body>
 </html>

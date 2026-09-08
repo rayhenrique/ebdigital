@@ -19,6 +19,11 @@ Route::get('/', function () {
     return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
 
+// Política de Privacidade Pública (Exigência Google Play Store & LGPD)
+Route::view('/politica-de-privacidade', 'privacy-policy')->name('privacy.policy');
+Route::view('/privacidade', 'privacy-policy');
+Route::view('/privacy-policy', 'privacy-policy');
+
 // Digital Asset Links for Android TWA verification
 Route::get('/.well-known/assetlinks.json', function () {
     $path = public_path('.well-known/assetlinks.json');

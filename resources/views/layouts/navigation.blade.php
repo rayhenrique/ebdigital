@@ -320,6 +320,21 @@
             </button>
         </form>
 
+        <!-- Link de Política de Privacidade (Google Play Requirement) -->
+        <a 
+            href="{{ route('privacy.policy') }}" 
+            target="_blank"
+            title="Política de Privacidade"
+            class="flex items-center rounded-xl text-slate-400 hover:text-blue-600 hover:bg-slate-100 transition-all"
+            :class="sidebarCollapsed ? 'justify-center p-2.5 w-11 h-11 mx-auto' : 'gap-3 px-3.5 py-1.5 text-xs font-medium w-full'"
+        >
+            <svg class="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span x-show="!sidebarCollapsed" x-cloak class="truncate text-[11px]">Privacidade (LGPD)</span>
+        </a>
+
         <!-- Botão de Alternar (Recolher / Expandir) no Rodapé -->
         <button 
             type="button" 
@@ -640,6 +655,19 @@
                     <span>Sair do Sistema</span>
                 </button>
             </form>
+
+            <!-- Link Política de Privacidade (Google Play Requirement) -->
+            <a 
+                href="{{ route('privacy.policy') }}" 
+                target="_blank"
+                class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-blue-600 hover:bg-slate-50 transition mt-1"
+            >
+                <svg class="w-4 h-4 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+                <span>Política de Privacidade (LGPD)</span>
+            </a>
         </div>
     </div>
 </div>
