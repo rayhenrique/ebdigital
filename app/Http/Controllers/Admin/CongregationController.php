@@ -75,8 +75,9 @@ class CongregationController extends Controller
             ['name' => $congregation->name, 'city' => $congregation->city]
         );
 
+        $name = $this->formatCongregationName($congregation->name);
         return redirect()->route('admin.congregacoes.index')
-            ->with('success', "Congregação {$congregation->name} cadastrada com sucesso!");
+            ->with('success', "{$name} cadastrada com sucesso!");
     }
 
     public function edit(Congregation $congregacao): View
@@ -108,8 +109,9 @@ class CongregationController extends Controller
             $congregacao->only(['name', 'pastor_dirigente', 'city', 'is_headquarters', 'is_active'])
         );
 
+        $name = $this->formatCongregationName($congregacao->name);
         return redirect()->route('admin.congregacoes.index')
-            ->with('success', "Congregação {$congregacao->name} atualizada com sucesso!");
+            ->with('success', "{$name} atualizada com sucesso!");
     }
 
     public function toggleActive(Congregation $congregacao): RedirectResponse
@@ -129,8 +131,9 @@ class CongregationController extends Controller
             ['is_active' => $congregacao->is_active]
         );
 
+        $name = $this->formatCongregationName($congregacao->name);
         $status = $congregacao->is_active ? 'ativada' : 'desativada';
-        return redirect()->back()->with('success', "Congregação {$congregacao->name} {$status} com sucesso!");
+        return redirect()->back()->with('success', "{$name} {$status} com sucesso!");
     }
 
     public function destroy(Congregation $congregacao): RedirectResponse
@@ -154,8 +157,22 @@ class CongregationController extends Controller
             null
         );
 
+        $formattedName = $this->formatCongregationName($name);
         return redirect()->route('admin.congregacoes.index')
-            ->with('success', "Congregação {$name} removida com sucesso!");
+            ->with('success', "{$formattedName} removida com sucesso!");
+    }
+
+    /**
+     * Formata o nome da congregação evitando repetições como 'Congregação Congregação...'.
+     */
+    protected function formatCongregationName(string $name): string
+    {
+        $trimmed = trim($name);
+        if (Str::startsWith(mb_strtolower($trimmed), ['congregação', 'congregacao', 'templo'])) {
+            return $trimmed;
+        }
+
+        return "Congregação {$trimmed}";
     }
 
     /**

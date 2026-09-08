@@ -18,17 +18,6 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="mb-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium flex items-center gap-2">
-                    <span>✓</span> {{ session('success') }}
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium flex items-center gap-2">
-                    <span>⚠</span> {{ session('error') }}
-                </div>
-            @endif
-
             <!-- Filtros -->
             <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm mb-6">
                 <form method="GET" action="{{ route('admin.congregacoes.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
