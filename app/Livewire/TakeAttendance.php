@@ -55,6 +55,11 @@ class TakeAttendance extends Component
 
     protected function authorizeAccess(): void
     {
+        $tenantService = app(\App\Services\TenantService::class);
+        if ($tenantService->isAllCongregations()) {
+            abort(403, 'Selecione uma congregação no menu para poder lançar chamadas.');
+        }
+
         $user = Auth::user();
         $class = EbdClass::findOrFail($this->classId);
 

@@ -27,6 +27,22 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            @if($isAllCongregations)
+                <div class="mb-6 p-4 rounded-2xl bg-amber-50/90 border border-amber-200/80 flex items-start sm:items-center justify-between gap-4 shadow-xs">
+                    <div class="flex items-start sm:items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl shrink-0">
+                            🌐
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-amber-950 uppercase tracking-wider">Modo Geral (Somente Leitura)</h4>
+                            <p class="text-xs text-amber-800 mt-0.5">
+                                Você está visualizando as classes de <strong>Todas as Congregações</strong>. Para lançar ou retificar chamadas, selecione uma congregação específica no seletor do menu lateral.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 @forelse($turmas as $class)
                     @php 
@@ -34,10 +50,17 @@
                     @endphp
                     <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $record ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
-                                    {{ $record ? '✓ Chamada Entregue' : '⏱ Pendente' }}
-                                </span>
+                            <div class="flex items-center justify-between mb-3 gap-2 flex-wrap">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $record ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
+                                        {{ $record ? '✓ Chamada Entregue' : '⏱ Pendente' }}
+                                    </span>
+                                    @if($isAllCongregations)
+                                        <span class="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200/60 px-2 py-0.5 rounded-md">
+                                            ⛪ {{ $class->congregation?->name ?? 'Templo Sede' }}
+                                        </span>
+                                    @endif
+                                </div>
                                 <span class="text-xs text-gray-400 font-medium">
                                     {{ $class->active_students_count }} alunos
                                 </span>
@@ -63,12 +86,19 @@
                             @endif
                         </div>
 
-                        <a 
-                            href="{{ route('chamada.take', ['class' => $class->id, 'date' => $selectedDate]) }}"
-                            class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm min-h-[48px] transition {{ $record ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-100' }}"
-                        >
-                            {{ $record ? 'Ver / Retificar Chamada' : 'Lançar Chamada Agora' }}
-                        </a>
+                        @if($isAllCongregations)
+                            <div class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs min-h-[48px] bg-slate-100 text-slate-400 border border-slate-200/80 cursor-not-allowed select-none" title="Selecione uma congregação no menu para poder lançar ou editar chamadas">
+                                <span>🔒</span>
+                                <span>Lançar Chamada (Selecione uma Congregação)</span>
+                            </div>
+                        @else
+                            <a 
+                                href="{{ route('chamada.take', ['class' => $class->id, 'date' => $selectedDate]) }}"
+                                class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm min-h-[48px] transition {{ $record ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-100' }}"
+                            >
+                                {{ $record ? 'Ver / Retificar Chamada' : 'Lançar Chamada Agora' }}
+                            </a>
+                        @endif
                     </div>
                 @empty
                     <div class="col-span-full bg-white rounded-2xl p-12 text-center text-gray-500 border border-gray-100">

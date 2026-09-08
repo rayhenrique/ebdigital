@@ -444,4 +444,44 @@ class MultiTenantTest extends TestCase
         ])->assertRedirect(route('professores.index'))
           ->assertSessionHas('warning');
     }
+
+    public function test_attendance_taking_is_disabled_in_all_congregations_mode(): void
+    {
+        $sede = Congregation::where('is_headquarters', true)->first() ?? Congregation::create([
+            'name' => 'Templo Sede',
+            'slug' => 'sede-attendance-lock',
+            'is_headquarters' => true,
+        ]);
+
+        $admin = User::factory()->create([
+            'role' => UserRole::ADMIN,
+            'congregation_id' => null,
+            'is_active' => true,
+        ]);
+
+        $class = EbdClass::create([
+            'congregation_id' => $sede->id,
+            'name' => 'Classe Chamada Bloqueio',
+            'is_active' => true,
+        ]);
+
+        // Sem congregação na sessão (Modo Todas as Congregações)
+        $this->actingAs($admin);
+
+        // Tela de listagem exibe avisos de modo somente leitura
+        $indexRes = $this->get(route('chamada.index'));
+        $indexRes->assertOk();
+        $indexRes->assertSee('Modo Geral (Somente Leitura)');
+        $indexRes->assertSee('Lançar Chamada (Selecione uma Congregação)');
+
+        // Tentativa de acessar a tela de lançamento de chamada é bloqueada
+        $takeRes = $this->get(route('chamada.take', $class));
+        $takeRes->assertRedirect(route('chamada.index'));
+        $takeRes->assertSessionHas('warning', 'Selecione uma congregação no menu para poder lançar chamadas.');
+
+        // Agora selecionando uma congregação na sessão, o acesso é liberado
+        $takeAllowedRes = $this->withSession(['selected_congregation_id' => $sede->id])
+            ->get(route('chamada.take', $class));
+        $takeAllowedRes->assertOk();
+    }
 }

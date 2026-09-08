@@ -6,12 +6,18 @@ namespace App\Http\Controllers;
 
 use App\Models\EbdClass;
 use App\Models\LessonRecord;
+use App\Services\TenantService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
+    public function __construct(
+        protected TenantService $tenantService
+    ) {}
+
     /**
      * Display list of classes available for the current user to take attendance.
      */
@@ -23,7 +29,7 @@ class AttendanceController extends Controller
         if ($user->isProfessor()) {
             $classes = $user->teachingClasses()->where('is_active', true)->withCount('activeStudents')->get();
         } else {
-            $classes = EbdClass::active()->with(['teachers'])->withCount('activeStudents')->orderBy('name')->get();
+            $classes = EbdClass::active()->with(['teachers', 'congregation'])->withCount('activeStudents')->orderBy('name')->get();
         }
 
         // Get lesson records for selected date
@@ -37,14 +43,20 @@ class AttendanceController extends Controller
             'classes' => $classes,
             'lessonRecords' => $lessonRecords,
             'selectedDate' => $date,
+            'isAllCongregations' => $this->tenantService->isAllCongregations(),
         ]);
     }
 
     /**
      * Show attendance taking interface for a specific class.
      */
-    public function take(EbdClass $class, Request $request): View
+    public function take(EbdClass $class, Request $request): View|RedirectResponse
     {
+        if ($this->tenantService->isAllCongregations()) {
+            return redirect()->route('chamada.index')
+                ->with('warning', 'Selecione uma congregação no menu para poder lançar chamadas.');
+        }
+
         $user = Auth::user();
 
         if ($user->isProfessor()) {
