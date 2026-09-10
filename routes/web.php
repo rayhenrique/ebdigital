@@ -36,10 +36,15 @@ Route::get('/.well-known/assetlinks.json', function () {
     abort(404);
 });
 
-// Central Dashboard Redirection by Role
+// Central Dashboard (Acessível a todos os usuários autenticados)
 Route::get('/dashboard', function () {
-    return redirect(AuthenticatedSessionController::redirectPathForUser(Auth::user()));
+    return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+// Redirecionamento de compatibilidade para a rota unificada do dashboard
+Route::get('/secretaria/dashboard', function () {
+    return redirect()->route('dashboard');
+})->middleware(['auth'])->name('secretaria.dashboard');
 
 Route::middleware('auth')->group(function () {
     // Perfil do Usuário
@@ -53,12 +58,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/chamada/{class}', [AttendanceController::class, 'take'])->name('chamada.take');
     });
 
-    // Módulo de Secretaria e Painel Consolidado (Secretários e Admin)
+    // Módulo de Secretaria (Secretários e Admin)
     Route::middleware('role:admin,secretario')->group(function () {
-        Route::get('/secretaria/dashboard', function () {
-            return view('secretaria.dashboard');
-        })->name('secretaria.dashboard');
-
         // Classes / Turmas
         Route::resource('classes', ClassController::class)->except(['show']);
         Route::patch('classes/{class}/toggle', [ClassController::class, 'toggleActive'])->name('classes.toggle');

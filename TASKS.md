@@ -71,3 +71,10 @@
 - [x] 11.2 Links de navegação pública e interna para a Política de Privacidade (tela de login, sidebar desktop e gaveta mobile).
 - [x] 11.3 Créditos do Desenvolvedor: Link oficial no rodapé da tela de login apontando para a KL Tecnologia (`https://kltecnologia.com`).
 
+## Fase 12: Unificação do Dashboard Central Pós-Login
+- [x] 12.1 Redirecionamento padronizado pós-login para a tela central de Dashboard (`/dashboard`) para todos os perfis (Admin, Secretário e Professor), vinculado ou não a congregação.
+- [x] 12.2 Rota unificada `/dashboard` renderizando o `daily-consolidated-dashboard` com retrocompatibilidade de redirecionamento para `/secretaria/dashboard`.
+- [x] 12.3 Atualização dos menus de navegação (desktop sidebar, mobile sidebar e mobile bottom bar) com acesso universal ao Dashboard Geral e permissões contextuais de chamada.
+- [x] 12.4 Tratamento seguro no `TenantService` para usuários sem congregação vinculada e cobertura em testes automatizados (`AuthenticationTest`).
+
+

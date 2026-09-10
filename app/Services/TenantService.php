@@ -33,7 +33,12 @@ class TenantService
             return (int) $selected;
         }
 
-        return $user->congregation_id ? (int) $user->congregation_id : 1;
+        if ($user->congregation_id) {
+            return (int) $user->congregation_id;
+        }
+
+        $headquarters = Congregation::where('is_headquarters', true)->first() ?? Congregation::first();
+        return $headquarters ? (int) $headquarters->id : null;
     }
 
     /**
@@ -95,6 +100,12 @@ class TenantService
             return Congregation::active()->orderBy('is_headquarters', 'desc')->orderBy('name')->get();
         }
 
-        return Congregation::where('id', $user->congregation_id ?? 1)->get();
+        $congregationId = $this->getCongregationId();
+
+        if ($congregationId === null) {
+            return new Collection();
+        }
+
+        return Congregation::where('id', $congregationId)->get();
     }
 }

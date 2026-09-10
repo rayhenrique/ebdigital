@@ -69,10 +69,6 @@ class AuthenticatedSessionController extends Controller
      */
     public static function redirectPathForUser(User $user): string
     {
-        return match ($user->role) {
-            UserRole::ADMIN => route('admin.users.index', absolute: false),
-            UserRole::SECRETARIO => route('secretaria.dashboard', absolute: false),
-            UserRole::PROFESSOR => route('chamada.index', absolute: false),
-        };
+        return route('dashboard', absolute: false);
     }
 }

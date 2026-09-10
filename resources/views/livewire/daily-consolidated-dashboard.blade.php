@@ -16,7 +16,17 @@
                 <!-- Badges no topo -->
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100/80">
-                        Secretaria Geral da EBD
+                        @php
+                            $tenantService = app(\App\Services\TenantService::class);
+                            $activeCongregation = $tenantService->getCongregation();
+                        @endphp
+                        @if($activeCongregation)
+                            {{ $activeCongregation->is_headquarters ? '🏛️' : '⛪' }} {{ $activeCongregation->name }}
+                        @elseif($tenantService->isAllCongregations())
+                            🌐 Todas as Congregações
+                        @else
+                            Secretaria Geral da EBD
+                        @endif
                     </span>
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $deliveredClassesCount === $classesCount ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
                         {{ $deliveredClassesCount }} de {{ $classesCount }} Classes Entregues
@@ -140,16 +150,18 @@
                     Apuração por turma para {{ \Carbon\Carbon::parse($selectedDate)->format('d/m/Y') }}
                 </p>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('classes.index') }}" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition hidden sm:inline-flex items-center gap-1.5">
-                    <span>🏫</span>
-                    <span>Gerenciar Classes</span>
-                </a>
-                <a href="{{ route('alunos.index') }}" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition hidden sm:inline-flex items-center gap-1.5">
-                    <span>👥</span>
-                    <span>Gerenciar Alunos</span>
-                </a>
-            </div>
+            @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('classes.index') }}" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition hidden sm:inline-flex items-center gap-1.5">
+                        <span>🏫</span>
+                        <span>Gerenciar Classes</span>
+                    </a>
+                    <a href="{{ route('alunos.index') }}" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 transition hidden sm:inline-flex items-center gap-1.5">
+                        <span>👥</span>
+                        <span>Gerenciar Alunos</span>
+                    </a>
+                </div>
+            @endif
         </div>
 
         <!-- A) No Mobile (block md:hidden): Lista de Cards de Classes com Accordion -->
@@ -244,27 +256,36 @@
                     </div>
 
                     <!-- Botão de Ação Full-Width na Base do Card -->
+                    @php
+                        $canTakeAttendance = Auth::user()->isAdmin() || Auth::user()->isSecretario() || (Auth::user()->isProfessor() && $report['class']->teachers->contains('id', Auth::id()));
+                    @endphp
                     <div>
-                        @if($report['is_delivered'])
-                            <a 
-                                href="{{ route('chamada.take', ['class' => $report['class']->id, 'date' => $selectedDate]) }}" 
-                                class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200/60 active:scale-[0.98] transition-all min-h-[48px] cursor-pointer"
-                            >
-                                <span>Retificar Chamada</span>
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/>
-                                </svg>
-                            </a>
+                        @if($canTakeAttendance)
+                            @if($report['is_delivered'])
+                                <a 
+                                    href="{{ route('chamada.take', ['class' => $report['class']->id, 'date' => $selectedDate]) }}" 
+                                    class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200/60 active:scale-[0.98] transition-all min-h-[48px] cursor-pointer"
+                                >
+                                    <span>Retificar Chamada</span>
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/>
+                                    </svg>
+                                </a>
+                            @else
+                                <a 
+                                    href="{{ route('chamada.take', ['class' => $report['class']->id, 'date' => $selectedDate]) }}" 
+                                    class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/15 active:scale-[0.98] transition-all min-h-[48px] cursor-pointer"
+                                >
+                                    <span>Lançar Chamada</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
+                                    </svg>
+                                </a>
+                            @endif
                         @else
-                            <a 
-                                href="{{ route('chamada.take', ['class' => $report['class']->id, 'date' => $selectedDate]) }}" 
-                                class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/15 active:scale-[0.98] transition-all min-h-[48px] cursor-pointer"
-                            >
-                                <span>Lançar Chamada</span>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
-                                </svg>
-                            </a>
+                            <div class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium text-slate-400 bg-slate-50 border border-slate-100 min-h-[44px]">
+                                <span>Apenas professor desta classe ou secretaria</span>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -332,20 +353,27 @@
                                 R$ {{ number_format((float)$report['offerings'], 2, ',', '.') }}
                             </td>
                             <td class="px-6 py-4 text-right">
-                                @if($report['is_delivered'])
-                                    <a 
-                                        href="{{ route('chamada.take', ['class' => $report['class']->id, 'date' => $selectedDate]) }}" 
-                                        class="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200/60 transition min-h-[40px]"
-                                    >
-                                        Retificar Chamada
-                                    </a>
+                                @php
+                                    $canTakeAttendance = Auth::user()->isAdmin() || Auth::user()->isSecretario() || (Auth::user()->isProfessor() && $report['class']->teachers->contains('id', Auth::id()));
+                                @endphp
+                                @if($canTakeAttendance)
+                                    @if($report['is_delivered'])
+                                        <a 
+                                            href="{{ route('chamada.take', ['class' => $report['class']->id, 'date' => $selectedDate]) }}" 
+                                            class="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200/60 transition min-h-[40px]"
+                                        >
+                                            Retificar Chamada
+                                        </a>
+                                    @else
+                                        <a 
+                                            href="{{ route('chamada.take', ['class' => $report['class']->id, 'date' => $selectedDate]) }}" 
+                                            class="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xs transition min-h-[40px]"
+                                        >
+                                            Lançar Chamada
+                                        </a>
+                                    @endif
                                 @else
-                                    <a 
-                                        href="{{ route('chamada.take', ['class' => $report['class']->id, 'date' => $selectedDate]) }}" 
-                                        class="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xs transition min-h-[40px]"
-                                    >
-                                        Lançar Chamada
-                                    </a>
+                                    <span class="text-xs text-slate-400 italic">Outro professor</span>
                                 @endif
                             </td>
                         </tr>

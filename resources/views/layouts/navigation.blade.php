@@ -170,18 +170,16 @@
             </div>
             <div x-show="sidebarCollapsed" class="h-px bg-slate-100 my-2 mx-1" x-cloak></div>
 
-            @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
-                <x-sidebar-link :href="route('secretaria.dashboard')" :active="request()->routeIs('secretaria.dashboard') || request()->routeIs('dashboard')" title="Dashboard Geral">
-                    <!-- Lucide: layout-dashboard -->
-                    <svg class="w-4.5 h-4.5 shrink-0 {{ (request()->routeIs('secretaria.dashboard') || request()->routeIs('dashboard')) ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="7" height="9" x="3" y="3" rx="1"/>
-                        <rect width="7" height="5" x="14" y="3" rx="1"/>
-                        <rect width="7" height="9" x="14" y="12" rx="1"/>
-                        <rect width="7" height="5" x="3" y="16" rx="1"/>
-                    </svg>
-                    <span x-show="!sidebarCollapsed" x-cloak class="truncate">Dashboard Geral</span>
-                </x-sidebar-link>
-            @endif
+            <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('secretaria.dashboard')" title="Dashboard Geral">
+                <!-- Lucide: layout-dashboard -->
+                <svg class="w-4.5 h-4.5 shrink-0 {{ (request()->routeIs('dashboard') || request()->routeIs('secretaria.dashboard')) ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="7" height="9" x="3" y="3" rx="1"/>
+                    <rect width="7" height="5" x="14" y="3" rx="1"/>
+                    <rect width="7" height="9" x="14" y="12" rx="1"/>
+                    <rect width="7" height="5" x="3" y="16" rx="1"/>
+                </svg>
+                <span x-show="!sidebarCollapsed" x-cloak class="truncate">Dashboard Geral</span>
+            </x-sidebar-link>
 
             <x-sidebar-link :href="route('chamada.index')" :active="request()->routeIs('chamada.*')" :title="Auth::user()->isProfessor() ? 'Minhas Chamadas' : 'Lançar Chamadas'">
                 <!-- Lucide: clipboard-check -->
@@ -523,17 +521,15 @@
                     Principal
                 </div>
 
-                @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
-                    <x-sidebar-link :href="route('secretaria.dashboard')" :active="request()->routeIs('secretaria.dashboard') || request()->routeIs('dashboard')" @click="mobileSidebarOpen = false">
-                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="7" height="9" x="3" y="3" rx="1"/>
-                            <rect width="7" height="5" x="14" y="3" rx="1"/>
-                            <rect width="7" height="9" x="14" y="12" rx="1"/>
-                            <rect width="7" height="5" x="3" y="16" rx="1"/>
-                        </svg>
-                        <span>Dashboard Geral</span>
-                    </x-sidebar-link>
-                @endif
+                <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('secretaria.dashboard')" @click="mobileSidebarOpen = false">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="7" height="9" x="3" y="3" rx="1"/>
+                        <rect width="7" height="5" x="14" y="3" rx="1"/>
+                        <rect width="7" height="9" x="14" y="12" rx="1"/>
+                        <rect width="7" height="5" x="3" y="16" rx="1"/>
+                    </svg>
+                    <span>Dashboard Geral</span>
+                </x-sidebar-link>
 
                 <x-sidebar-link :href="route('chamada.index')" :active="request()->routeIs('chamada.*')" @click="mobileSidebarOpen = false">
                     <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -679,10 +675,10 @@
     <div class="grid grid-cols-4 gap-1">
         <!-- 1. Painel -->
         @php
-            $isDashboard = request()->routeIs('secretaria.dashboard') || request()->routeIs('dashboard');
+            $isDashboard = request()->routeIs('dashboard') || request()->routeIs('secretaria.dashboard');
         @endphp
         <a 
-            href="{{ Auth::user()->isProfessor() ? route('chamada.index') : route('secretaria.dashboard') }}" 
+            href="{{ route('dashboard') }}" 
             wire:navigate
             class="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[11px] font-medium transition-colors min-h-[48px] {{ $isDashboard ? 'text-blue-600 font-bold bg-blue-50/70' : 'text-slate-500 hover:text-slate-800' }}"
         >
