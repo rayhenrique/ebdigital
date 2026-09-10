@@ -39,9 +39,11 @@
                                 required 
                                 class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 min-h-[48px]"
                             >
-                                <option value="">Selecione a Classe...</option>
+                                @if(count($turmas) !== 1)
+                                    <option value="">Selecione a Classe...</option>
+                                @endif
                                 @foreach($turmas as $c)
-                                    <option value="{{ $c->id }}" {{ old('class_id') == $c->id ? 'selected' : '' }}>
+                                    <option value="{{ $c->id }}" {{ (string) old('class_id', request('class_id', count($turmas) === 1 ? $c->id : '')) === (string) $c->id ? 'selected' : '' }}>
                                         {{ $c->name }}
                                     </option>
                                 @endforeach

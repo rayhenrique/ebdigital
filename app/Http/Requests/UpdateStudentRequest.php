@@ -10,7 +10,36 @@ class UpdateStudentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() || $this->user()?->isSecretario();
+        $user = $this->user();
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->isAdmin() || $user->isSecretario()) {
+            return true;
+        }
+
+        if ($user->isProfessor()) {
+            /** @var \App\Models\Student|null $aluno */
+            $aluno = $this->route('aluno');
+            if (! $aluno) {
+                return false;
+            }
+
+            $teachesCurrent = $user->teachingClasses()->where('classes.id', $aluno->class_id)->exists();
+            if (! $teachesCurrent) {
+                return false;
+            }
+
+            $newClassId = $this->input('class_id');
+            if ($newClassId && (int) $newClassId !== (int) $aluno->class_id) {
+                return $user->teachingClasses()->where('classes.id', (int) $newClassId)->exists();
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

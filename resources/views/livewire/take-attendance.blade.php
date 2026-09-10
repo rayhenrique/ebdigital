@@ -92,18 +92,28 @@
     @if(!$isReadOnly)
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <span class="text-sm font-semibold text-gray-700">Chamada dos Alunos ({{ count($students) }} matriculados)</span>
-            <div class="grid grid-cols-2 sm:flex gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <button 
+                    type="button" 
+                    wire:click="openQuickEnroll" 
+                    class="flex-1 sm:flex-none text-xs font-bold px-3.5 py-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm shadow-indigo-200 active:scale-[0.98] transition min-h-[48px] flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                    </svg>
+                    <span>+ Matricular Aluno</span>
+                </button>
                 <button 
                     type="button" 
                     wire:click="markAllPresent" 
-                    class="text-xs font-semibold px-3 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition min-h-[48px] flex items-center justify-center text-center"
+                    class="text-xs font-semibold px-3 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition min-h-[48px] flex items-center justify-center text-center cursor-pointer"
                 >
                     ✓ Todos Presentes
                 </button>
                 <button 
                     type="button" 
                     wire:click="markAllAbsent" 
-                    class="text-xs font-semibold px-3 py-2.5 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 transition min-h-[48px] flex items-center justify-center text-center"
+                    class="text-xs font-semibold px-3 py-2.5 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 transition min-h-[48px] flex items-center justify-center text-center cursor-pointer"
                 >
                     Desmarcar Todos
                 </button>
@@ -301,6 +311,112 @@
                 <span wire:loading.remove>💾 Gravar Aula</span>
                 <span wire:loading class="flex items-center gap-1">Gravando...</span>
             </button>
+        </div>
+    @endif
+
+    <!-- Modal de Matrícula Rápida de Aluno -->
+    @if($showQuickEnrollModal)
+        <div 
+            class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all"
+        >
+            <div 
+                class="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto"
+                @click.away="$wire.closeQuickEnroll()"
+            >
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base font-bold">
+                            🎓
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-850 font-display leading-tight">Matricular Novo Aluno</h3>
+                            <p class="text-xs text-slate-500 font-medium">Turma: {{ $ebdClass->name }}</p>
+                        </div>
+                    </div>
+                    <button 
+                        type="button" 
+                        wire:click="closeQuickEnroll" 
+                        class="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form wire:submit="quickEnrollStudent" class="space-y-3.5">
+                    <div>
+                        <label for="quick_name" class="block text-xs font-semibold text-slate-700 mb-1">
+                            Nome Completo do Aluno <span class="text-rose-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="quick_name" 
+                            wire:model="newStudentName" 
+                            placeholder="Ex: Pedro Henrique dos Santos"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-medium text-slate-800 px-3 py-2.5 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 min-h-[48px]"
+                            autofocus
+                        >
+                        @error('newStudentName')
+                            <p class="text-xs text-rose-600 mt-1 font-semibold">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="quick_phone" class="block text-xs font-semibold text-slate-700 mb-1">
+                                WhatsApp / Telefone
+                            </label>
+                            <input 
+                                type="text" 
+                                id="quick_phone" 
+                                wire:model="newStudentPhone" 
+                                placeholder="(82) 99999-9999"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-medium text-slate-800 px-3 py-2.5 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 min-h-[48px]"
+                            >
+                            @error('newStudentPhone')
+                                <p class="text-xs text-rose-600 mt-1 font-semibold">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="quick_birth" class="block text-xs font-semibold text-slate-700 mb-1">
+                                Data de Nascimento
+                            </label>
+                            <input 
+                                type="date" 
+                                id="quick_birth" 
+                                wire:model="newStudentBirthDate" 
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-medium text-slate-800 px-3 py-2.5 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 min-h-[48px]"
+                            >
+                            @error('newStudentBirthDate')
+                                <p class="text-xs text-rose-600 mt-1 font-semibold">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl text-[11px] text-emerald-800 flex items-center gap-2">
+                        <span class="text-sm">✓</span>
+                        <span>O aluno será matriculado nesta turma e marcado automaticamente como <strong>Presente</strong>.</span>
+                    </div>
+
+                    <div class="pt-2 flex flex-col sm:flex-row gap-2">
+                        <button 
+                            type="button" 
+                            wire:click="closeQuickEnroll" 
+                            class="w-full sm:w-auto flex-1 py-3 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 min-h-[48px] flex items-center justify-center cursor-pointer"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="w-full sm:w-auto flex-1 py-3 px-4 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 min-h-[48px] flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                            <span>Salvar e Marcar Presença</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     @endif
 </div>

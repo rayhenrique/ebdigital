@@ -38,6 +38,70 @@ class TakeAttendance extends Component
     public bool $isReadOnly = false;
     public ?int $existingRecordId = null;
 
+    // Matrícula Rápida de Aluno em Sala de Aula
+    public bool $showQuickEnrollModal = false;
+    public string $newStudentName = '';
+    public ?string $newStudentPhone = '';
+    public ?string $newStudentBirthDate = null;
+
+    public function openQuickEnroll(): void
+    {
+        if ($this->isReadOnly) {
+            return;
+        }
+
+        $this->reset(['newStudentName', 'newStudentPhone', 'newStudentBirthDate']);
+        $this->resetErrorBag();
+        $this->showQuickEnrollModal = true;
+    }
+
+    public function closeQuickEnroll(): void
+    {
+        $this->showQuickEnrollModal = false;
+        $this->reset(['newStudentName', 'newStudentPhone', 'newStudentBirthDate']);
+        $this->resetErrorBag();
+    }
+
+    public function quickEnrollStudent(): void
+    {
+        if ($this->isReadOnly) {
+            return;
+        }
+
+        $this->validate([
+            'newStudentName' => ['required', 'string', 'max:255'],
+            'newStudentPhone' => ['nullable', 'string', 'max:20'],
+            'newStudentBirthDate' => ['nullable', 'date'],
+        ], [
+            'newStudentName.required' => 'O nome do aluno é obrigatório.',
+        ]);
+
+        $class = EbdClass::findOrFail($this->classId);
+
+        $student = Student::create([
+            'class_id' => $this->classId,
+            'congregation_id' => $class->congregation_id,
+            'name' => trim($this->newStudentName),
+            'phone' => $this->newStudentPhone ? trim($this->newStudentPhone) : null,
+            'birth_date' => $this->newStudentBirthDate ?: null,
+            'is_active' => true,
+        ]);
+
+        AuditService::log('STUDENT_CREATED', Student::class, $student->id, null, [
+            'name' => $student->name,
+            'class_id' => $student->class_id,
+            'congregation_id' => $student->congregation_id,
+            'source' => 'quick_enroll_attendance',
+        ]);
+
+        // Auto-marca o novo aluno como presente na chamada da aula
+        $this->attendances[$student->id] = true;
+        $this->showQuickEnrollModal = false;
+        $this->reset(['newStudentName', 'newStudentPhone', 'newStudentBirthDate']);
+
+        session()->flash('status', "Aluno '{$student->name}' matriculado com sucesso nesta turma!");
+    }
+
     public function mount(int $classId, ?string $date = null): void
     {
         $this->classId = $classId;

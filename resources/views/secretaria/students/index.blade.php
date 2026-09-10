@@ -5,7 +5,7 @@
                 <h2 class="font-bold text-2xl text-gray-900 leading-tight">
                     Cadastro de Alunos
                 </h2>
-                <p class="text-xs text-gray-500 mt-0.5">Gestão de matrículas e vinculação de alunos às classes.</p>
+                <p class="text-xs text-gray-500 mt-0.5">{{ ($isProfessor ?? false) ? 'Alunos matriculados nas suas turmas da EBD.' : 'Gestão de matrículas e vinculação de alunos às classes.' }}</p>
             </div>
             @if($isAllCongregations)
                 <div class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200 cursor-not-allowed select-none" title="Selecione uma congregação no menu para cadastrar um aluno">
@@ -140,16 +140,18 @@
                                             {{ $s->is_active ? 'Desativar' : 'Ativar' }}
                                         </button>
                                     </form>
-                                    <form method="POST" action="{{ route('alunos.destroy', $s) }}" class="w-full" onsubmit="return confirm('Deseja realmente excluir o aluno \'{{ addslashes($s->name) }}\'? Esta ação é irreversível.')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button 
-                                            type="submit" 
-                                            class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold hover:bg-rose-100 min-h-[44px] cursor-pointer"
-                                        >
-                                            Excluir
-                                        </button>
-                                    </form>
+                                    @if(Auth::user()->isAdmin() || Auth::user()->isSecretario())
+                                        <form method="POST" action="{{ route('alunos.destroy', $s) }}" class="w-full" onsubmit="return confirm('Deseja realmente excluir o aluno \'{{ addslashes($s->name) }}\'? Esta ação é irreversível.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button 
+                                                type="submit" 
+                                                class="w-full flex items-center justify-center px-2 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold hover:bg-rose-100 min-h-[44px] cursor-pointer"
+                                            >
+                                                Excluir
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -223,13 +225,15 @@
                                                         {{ $s->is_active ? 'Desativar' : 'Ativar' }}
                                                     </button>
                                                 </form>
-                                                <form method="POST" action="{{ route('alunos.destroy', $s) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir o aluno \'{{ addslashes($s->name) }}\'?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-xs font-semibold text-rose-600 hover:text-rose-800 p-2 cursor-pointer">
-                                                        Excluir
-                                                    </button>
-                                                </form>
+                                                @if(Auth::user()->isAdmin() || Auth::user()->isSecretario())
+                                                    <form method="POST" action="{{ route('alunos.destroy', $s) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir o aluno \'{{ addslashes($s->name) }}\'? Esta ação é irreversível.')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-xs font-bold text-rose-600 hover:text-rose-800 p-2 cursor-pointer">
+                                                            Excluir
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         @endif
                                     </td>

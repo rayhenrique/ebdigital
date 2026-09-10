@@ -192,14 +192,14 @@
             </x-sidebar-link>
         </div>
 
-        <!-- Grupo 2: Gestão da EBD (Secretaria & Admin) -->
-        @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
-            <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider" x-show="!sidebarCollapsed" x-cloak>
-                    Gestão Escolar
-                </div>
-                <div x-show="sidebarCollapsed" class="h-px bg-slate-100 my-2 mx-1" x-cloak></div>
+        <!-- Grupo 2: Gestão da EBD (Professores, Secretaria & Admin) -->
+        <div class="space-y-1">
+            <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider" x-show="!sidebarCollapsed" x-cloak>
+                {{ Auth::user()->isProfessor() ? 'Minhas Turmas' : 'Gestão Escolar' }}
+            </div>
+            <div x-show="sidebarCollapsed" class="h-px bg-slate-100 my-2 mx-1" x-cloak></div>
 
+            @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
                 <x-sidebar-link :href="route('classes.index')" :active="request()->routeIs('classes.*')" title="Classes / Turmas">
                     <!-- Lucide: layers -->
                     <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('classes.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -209,18 +209,20 @@
                     </svg>
                     <span x-show="!sidebarCollapsed" x-cloak class="truncate">Classes / Turmas</span>
                 </x-sidebar-link>
+            @endif
 
-                <x-sidebar-link :href="route('alunos.index')" :active="request()->routeIs('alunos.*')" title="Alunos Matriculados">
-                    <!-- Lucide: users -->
-                    <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('alunos.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                    <span x-show="!sidebarCollapsed" x-cloak class="truncate">Alunos Matriculados</span>
-                </x-sidebar-link>
+            <x-sidebar-link :href="route('alunos.index')" :active="request()->routeIs('alunos.*')" :title="Auth::user()->isProfessor() ? 'Alunos da Turma' : 'Alunos Matriculados'">
+                <!-- Lucide: users -->
+                <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('alunos.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span x-show="!sidebarCollapsed" x-cloak class="truncate">{{ Auth::user()->isProfessor() ? 'Alunos da Turma' : 'Alunos Matriculados' }}</span>
+            </x-sidebar-link>
 
+            @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
                 <x-sidebar-link :href="route('professores.index')" :active="request()->routeIs('professores.*')" title="Professores">
                     <!-- Lucide: graduation-cap -->
                     <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('professores.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -239,8 +241,8 @@
                     </svg>
                     <span x-show="!sidebarCollapsed" x-cloak class="truncate">Relatórios da EBD</span>
                 </x-sidebar-link>
-            </div>
-        @endif
+            @endif
+        </div>
 
         <!-- Grupo 3: Administração Geral (Apenas Admin) -->
         @if(Auth::user()->isAdmin())
@@ -542,12 +544,12 @@
             </div>
 
             <!-- Gestão EBD -->
-            @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
-                <div class="space-y-1">
-                    <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                        Gestão Escolar
-                    </div>
+            <div class="space-y-1">
+                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    {{ Auth::user()->isProfessor() ? 'Minhas Turmas' : 'Gestão Escolar' }}
+                </div>
 
+                @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
                     <x-sidebar-link :href="route('classes.index')" :active="request()->routeIs('classes.*')" @click="mobileSidebarOpen = false">
                         <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
@@ -556,17 +558,19 @@
                         </svg>
                         <span>Classes / Turmas</span>
                     </x-sidebar-link>
+                @endif
 
-                    <x-sidebar-link :href="route('alunos.index')" :active="request()->routeIs('alunos.*')" @click="mobileSidebarOpen = false">
-                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                        <span>Alunos Matriculados</span>
-                    </x-sidebar-link>
+                <x-sidebar-link :href="route('alunos.index')" :active="request()->routeIs('alunos.*')" @click="mobileSidebarOpen = false">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span>{{ Auth::user()->isProfessor() ? 'Alunos da Turma' : 'Alunos Matriculados' }}</span>
+                </x-sidebar-link>
 
+                @if(Auth::user()->isSecretario() || Auth::user()->isAdmin())
                     <x-sidebar-link :href="route('professores.index')" :active="request()->routeIs('professores.*')" @click="mobileSidebarOpen = false">
                         <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/>
@@ -583,8 +587,8 @@
                         </svg>
                         <span>Relatórios da EBD</span>
                     </x-sidebar-link>
-                </div>
-            @endif
+                @endif
+            </div>
 
             <!-- Admin -->
             @if(Auth::user()->isAdmin())
@@ -706,10 +710,9 @@
         <!-- 3. Alunos -->
         @php
             $isAlunos = request()->routeIs('alunos.*') || request()->routeIs('classes.*');
-            $alunosTarget = Auth::user()->isProfessor() ? route('chamada.index') : route('alunos.index');
         @endphp
         <a 
-            href="{{ $alunosTarget }}" 
+            href="{{ route('alunos.index') }}" 
             wire:navigate
             class="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[11px] font-medium transition-colors min-h-[48px] {{ $isAlunos ? 'text-blue-600 font-bold bg-blue-50/70' : 'text-slate-500 hover:text-slate-800' }}"
         >

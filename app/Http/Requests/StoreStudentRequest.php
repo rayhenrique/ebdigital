@@ -10,7 +10,25 @@ class StoreStudentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() || $this->user()?->isSecretario();
+        $user = $this->user();
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->isAdmin() || $user->isSecretario()) {
+            return true;
+        }
+
+        if ($user->isProfessor()) {
+            $classId = $this->input('class_id');
+            if (! $classId) {
+                return true;
+            }
+
+            return $user->teachingClasses()->where('classes.id', (int) $classId)->exists();
+        }
+
+        return false;
     }
 
     /**

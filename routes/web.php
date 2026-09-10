@@ -52,10 +52,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Módulo de Chamada Mobile-First (Professores, Secretários e Admin)
+    // Módulo de Chamada e Gestão de Alunos (Professores, Secretários e Admin)
     Route::middleware('role:admin,secretario,professor')->group(function () {
         Route::get('/chamada', [AttendanceController::class, 'index'])->name('chamada.index');
         Route::get('/chamada/{class}', [AttendanceController::class, 'take'])->name('chamada.take');
+
+        // Alunos (Professores gerenciam alunos de suas turmas; Secretários e Admin gerenciam da congregação)
+        Route::resource('alunos', StudentController::class)->except(['show']);
+        Route::patch('alunos/{aluno}/toggle', [StudentController::class, 'toggleActive'])->name('alunos.toggle');
     });
 
     // Módulo de Secretaria (Secretários e Admin)
@@ -63,10 +67,6 @@ Route::middleware('auth')->group(function () {
         // Classes / Turmas
         Route::resource('classes', ClassController::class)->except(['show']);
         Route::patch('classes/{class}/toggle', [ClassController::class, 'toggleActive'])->name('classes.toggle');
-
-        // Alunos
-        Route::resource('alunos', StudentController::class)->except(['show']);
-        Route::patch('alunos/{aluno}/toggle', [StudentController::class, 'toggleActive'])->name('alunos.toggle');
 
         // Professores da Congregação
         Route::resource('professores', TeacherController::class)

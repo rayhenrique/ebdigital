@@ -77,4 +77,13 @@
 - [x] 12.3 Atualização dos menus de navegação (desktop sidebar, mobile sidebar e mobile bottom bar) com acesso universal ao Dashboard Geral e permissões contextuais de chamada.
 - [x] 12.4 Tratamento seguro no `TenantService` para usuários sem congregação vinculada e cobertura em testes automatizados (`AuthenticationTest`).
 
+## Fase 13: Gestão e Matrícula de Alunos por Professores
+- [x] 13.1 Criar a `StudentPolicy` para autorização de acesso a alunos (Admin, Secretário e Professor com escopo estrito às suas turmas).
+- [x] 13.2 Form Requests (`StoreStudentRequest`, `UpdateStudentRequest`) atualizados para validar autorização do professor sobre sua classe.
+- [x] 13.3 Controlador `StudentController` adaptado para permitir que professores listem, cadastrem, editem e ativem/inativem alunos de suas próprias turmas.
+- [x] 13.4 Componente Livewire `TakeAttendance` enriquecido com botão e modal de Matrícula Rápida em sala de aula (com inclusão automática e presença marcada).
+- [x] 13.5 Menus de navegação (sidebar desktop, gaveta mobile e barra inferior mobile) atualizados com acesso direto de professores a "Alunos".
+- [x] 13.6 Suíte completa de testes automatizados (`StudentManagementTest`) garantindo isolamento entre turmas e proteção contra acessos indevidos (73 testes passando).
+
+
 
