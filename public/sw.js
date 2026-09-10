@@ -6,16 +6,5 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('fetch', (event) => {
-  // Não interceptar requisições de navegação (HTML) — deixa o browser/Livewire gerenciar
-  if (event.request.mode === 'navigate') {
-    return;
-  }
-
-  // Para outros recursos, tenta a rede e, se falhar, retorna resposta de erro gracioso
-  event.respondWith(
-    fetch(event.request).catch(() => {
-      return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
-    })
-  );
-});
+// Sem interceptação de fetch — o SW existe apenas para suporte PWA (instalação na tela inicial).
+// Todas as requisições seguem diretamente para o servidor sem interferência.
