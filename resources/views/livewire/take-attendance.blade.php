@@ -122,7 +122,7 @@
     @endif
 
     <!-- Lista de Alunos (Mobile-First / Touch Targets >= 48px) -->
-    <div class="space-y-2 mb-6">
+    <div class="space-y-2 mb-6 pb-20 sm:pb-0">
         @forelse($students as $student)
             @php $isPresent = $attendances[$student->id] ?? false; @endphp
             <div 
@@ -144,6 +144,7 @@
                 <!-- Botão Toggle com Touch Target >= 48px -->
                 <button 
                     type="button" 
+                    wire:click.stop="toggleAttendance({{ $student->id }})"
                     @if($isReadOnly) disabled @endif
                     class="w-12 h-12 flex items-center justify-center rounded-xl transition {{ $isPresent ? 'bg-emerald-600 text-white shadow-sm' : 'bg-gray-100 text-gray-400 hover:bg-gray-200' }}"
                 >
