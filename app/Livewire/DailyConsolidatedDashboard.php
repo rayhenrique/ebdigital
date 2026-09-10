@@ -8,6 +8,7 @@ use App\Models\EbdClass;
 use App\Models\LessonRecord;
 use App\Models\Student;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -27,13 +28,24 @@ class DailyConsolidatedDashboard extends Component
 
     public function render(): View
     {
-        $classes = EbdClass::active()
-            ->with(['teachers', 'activeStudents'])
-            ->orderBy('name')
-            ->get();
+        $user = Auth::user();
+
+        if ($user && $user->isProfessor()) {
+            $classes = $user->teachingClasses()
+                ->where('classes.is_active', true)
+                ->with(['teachers', 'activeStudents'])
+                ->orderBy('classes.name')
+                ->get();
+        } else {
+            $classes = EbdClass::active()
+                ->with(['teachers', 'activeStudents'])
+                ->orderBy('name')
+                ->get();
+        }
 
         $records = LessonRecord::with(['attendances', 'registeredBy'])
             ->where('lesson_date', $this->selectedDate)
+            ->whereIn('class_id', $classes->pluck('id'))
             ->get()
             ->keyBy('class_id');
 

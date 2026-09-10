@@ -38,6 +38,9 @@ class TakeAttendance extends Component
     public bool $isReadOnly = false;
     public ?int $existingRecordId = null;
 
+    // Modal de Confirmação antes de Salvar
+    public bool $showConfirmModal = false;
+
     // Matrícula Rápida de Aluno em Sala de Aula
     public bool $showQuickEnrollModal = false;
     public string $newStudentName = '';
@@ -260,7 +263,10 @@ class TakeAttendance extends Component
         return (int) round(($this->presentCount / $this->enrolledCount) * 100);
     }
 
-    public function save(): void
+    /**
+     * Abre o modal de confirmação após validar os dados.
+     */
+    public function requestSave(): void
     {
         $this->authorizeAccess();
 
@@ -280,6 +286,51 @@ class TakeAttendance extends Component
             'offeringsAmount' => ['nullable', 'numeric', 'min:0'],
             'observations' => ['nullable', 'string'],
         ]);
+
+        $this->showConfirmModal = true;
+    }
+
+    /**
+     * Cancela a confirmação e fecha o modal.
+     */
+    public function cancelSave(): void
+    {
+        $this->showConfirmModal = false;
+    }
+
+    /**
+     * Salva diretamente a chamada (compatibilidade com testes automatizados).
+     */
+    public function save(): void
+    {
+        $this->confirmSave();
+    }
+
+    /**
+     * Confirma e salva os dados da chamada, depois redireciona.
+     */
+    public function confirmSave(): void
+    {
+        $this->authorizeAccess();
+
+        if ($this->isReadOnly) {
+            throw ValidationException::withMessages([
+                'lessonDate' => 'Apenas a secretaria pode alterar chamadas de datas passadas.',
+            ]);
+        }
+
+        $this->validate([
+            'lessonDate' => ['required', 'date'],
+            'lessonNumber' => ['nullable', 'string', 'max:50'],
+            'lessonTitle' => ['nullable', 'string', 'max:255'],
+            'visitorsCount' => ['nullable', 'numeric', 'min:0'],
+            'biblesCount' => ['nullable', 'numeric', 'min:0'],
+            'magazinesCount' => ['nullable', 'numeric', 'min:0'],
+            'offeringsAmount' => ['nullable', 'numeric', 'min:0'],
+            'observations' => ['nullable', 'string'],
+        ]);
+
+        $this->showConfirmModal = false;
 
         $user = Auth::user();
 
@@ -354,6 +405,8 @@ class TakeAttendance extends Component
         });
 
         session()->flash('status', 'Chamada salva com sucesso!');
+
+        $this->redirect(route('chamada.index'), navigate: true);
     }
 
     public function render(): View

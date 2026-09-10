@@ -1,3 +1,7 @@
+@php
+    /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\EbdClass> $ebdClasses */
+    $ebdClasses = $ebdClasses ?? $classes;
+@endphp
 <div>
     <!-- =========================================================================
          1. CABEÇALHO OFICIAL DE IMPRESSÃO (Visível apenas ao Imprimir em A4)
@@ -28,9 +32,21 @@
             @endif
         </div>
         <p class="text-[10px] text-slate-400 mt-1">
-            Emitido em: {{ now()->format('d/m/Y \à\s H:i') }} | Por: {{ Auth::user()->name }}
+            Emitido em: {{ now()->format('d/m/Y \à\s H:i') }} | Por: {{ Auth::user()->name }} {{ Auth::user()->isProfessor() ? '(Professor)' : '' }}
         </p>
     </div>
+
+    @if(Auth::user()->isProfessor() && $ebdClasses->isEmpty())
+        <div class="print:hidden p-5 rounded-2xl bg-amber-50 border border-amber-200 text-center mb-6">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-amber-100 flex items-center justify-center text-2xl">
+                ⚠️
+            </div>
+            <h3 class="text-sm font-bold text-amber-900">Nenhuma sala vinculada</h3>
+            <p class="text-xs text-amber-700 mt-1 max-w-md mx-auto">
+                Você ainda não possui nenhuma sala de EBD vinculada ao seu usuário. Solicite à secretaria da congregação a vinculação da sua turma para visualizar os relatórios analíticos.
+            </p>
+        </div>
+    @endif
 
     <!-- =========================================================================
          2. NAVEGAÇÃO POR ABAS (TABS) - Oculto na Impressão
@@ -163,9 +179,11 @@
                             wire:model.live="selectedClassId" 
                             class="block w-full text-xs sm:text-sm rounded-xl border border-slate-200 py-2.5 px-3 bg-white focus:ring-2 focus:ring-blue-600 min-h-[44px]"
                         >
-                            @foreach($classes as $c)
+                            @forelse($ebdClasses as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
-                            @endforeach
+                            @empty
+                                <option value="">Nenhuma classe vinculada</option>
+                            @endforelse
                         </select>
                     </div>
                 @endif
@@ -202,8 +220,8 @@
                         wire:model.live="birthdayClassId" 
                         class="block w-full text-xs sm:text-sm rounded-xl border border-slate-200 py-2.5 px-3 bg-white focus:ring-2 focus:ring-blue-600 min-h-[44px]"
                     >
-                        <option value="">Todas as Classes</option>
-                        @foreach($classes as $c)
+                        <option value="">{{ Auth::user()->isProfessor() ? 'Todas as Minhas Classes' : 'Todas as Classes' }}</option>
+                        @foreach($ebdClasses as $c)
                             <option value="{{ $c->id }}">{{ $c->name }}</option>
                         @endforeach
                     </select>
@@ -265,10 +283,10 @@
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h3 class="text-sm font-bold text-slate-850">
-                    Desempenho Consolidado por Classe no Período
+                    {{ Auth::user()->isProfessor() ? 'Desempenho das Minhas Classes no Período' : 'Desempenho Consolidado por Classe no Período' }}
                 </h3>
                 <span class="text-xs font-medium text-slate-500">
-                    {{ count($consolidatedData['classes_breakdown']) }} classes registradas
+                    {{ count($consolidatedData['classes_breakdown']) }} {{ Auth::user()->isProfessor() ? 'classe(s) vinculada(s)' : 'classes registradas' }}
                 </span>
             </div>
 
@@ -521,14 +539,25 @@
          ========================================================================= -->
     <div class="hidden print:block mt-16 pt-8 text-center">
         <div class="grid grid-cols-2 gap-12 max-w-2xl mx-auto">
-            <div class="border-t border-slate-900 pt-2">
-                <p class="text-xs font-bold text-slate-900">Pastor Presidente / Dirigente</p>
-                <p class="text-[10px] text-slate-500">Igreja Evangélica Assembleia de Deus</p>
-            </div>
-            <div class="border-t border-slate-900 pt-2">
-                <p class="text-xs font-bold text-slate-900">Superintendente da EBD</p>
-                <p class="text-[10px] text-slate-500">Secretaria da Escola Bíblica Dominical</p>
-            </div>
+            @if(Auth::user()->isProfessor())
+                <div class="border-t border-slate-900 pt-2">
+                    <p class="text-xs font-bold text-slate-900">{{ Auth::user()->name }}</p>
+                    <p class="text-[10px] text-slate-500">Professor(a) Responsável</p>
+                </div>
+                <div class="border-t border-slate-900 pt-2">
+                    <p class="text-xs font-bold text-slate-900">Superintendente da EBD</p>
+                    <p class="text-[10px] text-slate-500">Secretaria da Escola Bíblica Dominical</p>
+                </div>
+            @else
+                <div class="border-t border-slate-900 pt-2">
+                    <p class="text-xs font-bold text-slate-900">Pastor Presidente / Dirigente</p>
+                    <p class="text-[10px] text-slate-500">Igreja Evangélica Assembleia de Deus</p>
+                </div>
+                <div class="border-t border-slate-900 pt-2">
+                    <p class="text-xs font-bold text-slate-900">Superintendente da EBD</p>
+                    <p class="text-[10px] text-slate-500">Secretaria da Escola Bíblica Dominical</p>
+                </div>
+            @endif
         </div>
     </div>
 </div>

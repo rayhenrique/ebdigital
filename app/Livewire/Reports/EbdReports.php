@@ -9,7 +9,8 @@ use App\Models\LessonAttendance;
 use App\Models\LessonRecord;
 use App\Models\Student;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -37,10 +38,31 @@ class EbdReports extends Component
         $this->currentShortcut = 'month';
         $this->selectedMonth = (int) now()->format('n');
 
-        $firstClass = EbdClass::active()->first();
+        $firstClass = $this->getAllowedClasses()->first();
         if ($firstClass) {
             $this->selectedClassId = $firstClass->id;
         }
+    }
+
+    /**
+     * Retorna a coleção de classes permitidas para o usuário logado.
+     * Professores veem estritamente as classes em que lecionam.
+     * Secretários e Administradores veem as classes da congregação.
+     *
+     * @return Collection<int, EbdClass>
+     */
+    protected function getAllowedClasses(): Collection
+    {
+        $user = Auth::user();
+
+        if ($user && $user->isProfessor()) {
+            return $user->teachingClasses()
+                ->where('classes.is_active', true)
+                ->orderBy('classes.name')
+                ->get();
+        }
+
+        return EbdClass::active()->orderBy('name')->get();
     }
 
     public function setTab(string $tab): void
@@ -95,29 +117,70 @@ class EbdReports extends Component
 
     public function render(): View
     {
-        $classes = EbdClass::active()->orderBy('name')->get();
+        $classes = $this->getAllowedClasses();
+        $allowedClassIds = $classes->pluck('id')->all();
+
+        // Validar que a classe selecionada pertence às classes permitidas
+        if ($this->selectedClassId !== null && !in_array($this->selectedClassId, $allowedClassIds, true)) {
+            $this->selectedClassId = $classes->first()?->id;
+        } elseif ($this->selectedClassId === null && $classes->isNotEmpty()) {
+            $this->selectedClassId = $classes->first()->id;
+        }
+
+        if ($this->birthdayClassId !== null && !in_array($this->birthdayClassId, $allowedClassIds, true)) {
+            $this->birthdayClassId = null;
+        }
 
         return view('livewire.reports.ebd-reports', [
+            'ebdClasses' => $classes,
             'classes' => $classes,
-            'consolidatedData' => $this->getConsolidatedReportData(),
-            'nominalData' => $this->getNominalStudentsReportData(),
-            'birthdayData' => $this->getBirthdayReportData(),
+            'consolidatedData' => $this->getConsolidatedReportData($allowedClassIds),
+            'nominalData' => $this->getNominalStudentsReportData($allowedClassIds),
+            'birthdayData' => $this->getBirthdayReportData($allowedClassIds),
         ]);
     }
 
     /**
      * Calcula as métricas consolidadas gerais e por classe no período selecionado.
+     *
+     * @param list<int> $allowedClassIds
      */
-    protected function getConsolidatedReportData(): array
+    protected function getConsolidatedReportData(array $allowedClassIds): array
     {
-        $records = LessonRecord::with(['attendances', 'ebdClass.teachers'])
-            ->whereBetween('lesson_date', [$this->startDate, $this->endDate])
-            ->orderBy('lesson_date')
-            ->get();
+        $user = Auth::user();
+        $isProfessor = $user && $user->isProfessor();
+
+        // Se professor não tiver turmas vinculadas, retorna métricas zeradas
+        if ($isProfessor && empty($allowedClassIds)) {
+            return [
+                'unique_sundays' => 0,
+                'total_present' => 0,
+                'avg_present_per_sunday' => 0,
+                'overall_rate' => 0,
+                'total_visitors' => 0,
+                'total_bibles' => 0,
+                'total_magazines' => 0,
+                'total_offerings' => 0.0,
+                'classes_breakdown' => [],
+            ];
+        }
+
+        $recordsQuery = LessonRecord::with(['attendances', 'ebdClass.teachers'])
+            ->whereBetween('lesson_date', [$this->startDate, $this->endDate]);
+
+        if ($isProfessor) {
+            $recordsQuery->whereIn('class_id', $allowedClassIds);
+        }
+
+        $records = $recordsQuery->orderBy('lesson_date')->get();
 
         $uniqueSundaysCount = $records->pluck('lesson_date')->unique()->count();
 
-        $totalEnrolledActive = Student::active()->count();
+        $studentsQuery = Student::active();
+        if ($isProfessor) {
+            $studentsQuery->whereIn('class_id', $allowedClassIds);
+        }
+        $totalEnrolledActive = $studentsQuery->count();
         $totalPresentCount = 0;
         $totalVisitorsCount = 0;
         $totalBiblesCount = 0;
@@ -209,10 +272,12 @@ class EbdReports extends Component
 
     /**
      * Calcula o relatório nominal de frequência e alertas de faltosos por aluno na classe.
+     *
+     * @param list<int> $allowedClassIds
      */
-    protected function getNominalStudentsReportData(): array
+    protected function getNominalStudentsReportData(array $allowedClassIds): array
     {
-        if (! $this->selectedClassId) {
+        if (! $this->selectedClassId || ! in_array($this->selectedClassId, $allowedClassIds, true)) {
             return [
                 'selected_class' => null,
                 'lesson_dates' => [],
@@ -304,16 +369,41 @@ class EbdReports extends Component
 
     /**
      * Retorna a listagem de aniversariantes do mês selecionado.
+     *
+     * @param list<int> $allowedClassIds
      */
-    protected function getBirthdayReportData(): array
+    protected function getBirthdayReportData(array $allowedClassIds): array
     {
+        $user = Auth::user();
+        $isProfessor = $user && $user->isProfessor();
         $month = $this->selectedMonth;
+
+        $monthNames = [
+            1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
+            5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
+            9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro',
+        ];
+
+        // Se professor não tiver turmas vinculadas, retorna lista vazia segura
+        if ($isProfessor && empty($allowedClassIds)) {
+            return [
+                'month_name' => $monthNames[$month] ?? 'Mês',
+                'birthdays' => [],
+                'total' => 0,
+            ];
+        }
 
         $query = Student::with('ebdClass')
             ->whereNotNull('birth_date')
             ->whereMonth('birth_date', $month);
 
-        if ($this->birthdayClassId) {
+        if ($isProfessor) {
+            if ($this->birthdayClassId && in_array($this->birthdayClassId, $allowedClassIds, true)) {
+                $query->where('class_id', $this->birthdayClassId);
+            } else {
+                $query->whereIn('class_id', $allowedClassIds);
+            }
+        } elseif ($this->birthdayClassId) {
             $query->where('class_id', $this->birthdayClassId);
         }
 
@@ -341,12 +431,6 @@ class EbdReports extends Component
                 'age' => $age,
             ];
         })->sortBy('day')->values()->toArray();
-
-        $monthNames = [
-            1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
-            5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
-            9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro',
-        ];
 
         return [
             'month_name' => $monthNames[$month] ?? 'Mês',

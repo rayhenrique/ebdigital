@@ -85,5 +85,15 @@
 - [x] 13.5 Menus de navegação (sidebar desktop, gaveta mobile e barra inferior mobile) atualizados com acesso direto de professores a "Alunos".
 - [x] 13.6 Suíte completa de testes automatizados (`StudentManagementTest`) garantindo isolamento entre turmas e proteção contra acessos indevidos (73 testes passando).
 
+## Fase 14: Relatórios da EBD Acessíveis a Professores (Escopo por Turmas Vinculadas)
+- [x] 14.1 Rota `/relatorios` atualizada no `routes/web.php` com permissão estendida ao perfil Professor (`role:admin,secretario,professor`).
+- [x] 14.2 Menus de navegação (Sidebar Desktop e Gaveta Mobile) atualizados exibindo "Relatórios da Turma" com link ativo para professores.
+- [x] 14.3 Componente Livewire `EbdReports` escopado: professores visualizam estritamente suas turmas atribuídas (`teachingClasses`), métricas consolidadas isoladas e dropdowns filtrados.
+- [x] 14.4 Relatório de Frequência Nominal protegido contra manipulação de ID e restrito aos alunos das turmas do professor.
+- [x] 14.5 Relatório de Aniversariantes filtrado apenas para os alunos das classes lecionadas pelo professor.
+- [x] 14.6 Dashboard Consolidado (`DailyConsolidatedDashboard`) adaptado para exibir turmas atribuídas quando logado como professor.
+- [x] 14.7 Layout de impressão e estado vazio gracioso para professores sem turmas vinculadas.
+- [x] 14.8 Suíte completa de testes automatizados (`ReportsTest`) cobrindo acesso, isolamento de turmas, cálculo de métricas e estados vazios (77 testes passando no projeto).
+
 
 

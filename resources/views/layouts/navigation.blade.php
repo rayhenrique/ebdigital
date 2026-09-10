@@ -232,16 +232,16 @@
                     </svg>
                     <span x-show="!sidebarCollapsed" x-cloak class="truncate">Professores</span>
                 </x-sidebar-link>
-
-                <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" title="Relatórios da EBD">
-                    <!-- Lucide: line-chart -->
-                    <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('reports.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 3v18h18"/>
-                        <path d="m19 9-5 5-4-4-3 3"/>
-                    </svg>
-                    <span x-show="!sidebarCollapsed" x-cloak class="truncate">Relatórios da EBD</span>
-                </x-sidebar-link>
             @endif
+
+            <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" :title="Auth::user()->isProfessor() ? 'Relatórios da Turma' : 'Relatórios da EBD'">
+                <!-- Lucide: line-chart -->
+                <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('reports.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3v18h18"/>
+                    <path d="m19 9-5 5-4-4-3 3"/>
+                </svg>
+                <span x-show="!sidebarCollapsed" x-cloak class="truncate">{{ Auth::user()->isProfessor() ? 'Relatórios da Turma' : 'Relatórios da EBD' }}</span>
+            </x-sidebar-link>
         </div>
 
         <!-- Grupo 3: Administração Geral (Apenas Admin) -->
@@ -579,15 +579,15 @@
                         </svg>
                         <span>Professores</span>
                     </x-sidebar-link>
-
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" @click="mobileSidebarOpen = false">
-                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 3v18h18"/>
-                            <path d="m19 9-5 5-4-4-3 3"/>
-                        </svg>
-                        <span>Relatórios da EBD</span>
-                    </x-sidebar-link>
                 @endif
+
+                <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" @click="mobileSidebarOpen = false">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"/>
+                        <path d="m19 9-5 5-4-4-3 3"/>
+                    </svg>
+                    <span>{{ Auth::user()->isProfessor() ? 'Relatórios da Turma' : 'Relatórios da EBD' }}</span>
+                </x-sidebar-link>
             </div>
 
             <!-- Admin -->

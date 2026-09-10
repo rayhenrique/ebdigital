@@ -60,6 +60,9 @@ Route::middleware('auth')->group(function () {
         // Alunos (Professores gerenciam alunos de suas turmas; Secretários e Admin gerenciam da congregação)
         Route::resource('alunos', StudentController::class)->except(['show']);
         Route::patch('alunos/{aluno}/toggle', [StudentController::class, 'toggleActive'])->name('alunos.toggle');
+
+        // Relatórios da EBD (Professores veem apenas salas vinculadas; Secretários e Admin veem da congregação)
+        Route::get('/relatorios', [ReportController::class, 'index'])->name('reports.index');
     });
 
     // Módulo de Secretaria (Secretários e Admin)
@@ -74,9 +77,6 @@ Route::middleware('auth')->group(function () {
             ->except(['show']);
         Route::patch('professores/{professor}/toggle', [TeacherController::class, 'toggleActive'])->name('professores.toggle');
         Route::patch('professores/{professor}/reset-password', [TeacherController::class, 'resetPassword'])->name('professores.reset-password');
-
-        // Relatórios da EBD
-        Route::get('/relatorios', [ReportController::class, 'index'])->name('reports.index');
     });
 
     // Módulo Administrativo Exclusivo (Admin)

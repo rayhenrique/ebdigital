@@ -3,10 +3,14 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
                 <h2 class="text-xl font-bold text-slate-900 leading-tight">
-                    Relatórios da EBD
+                    {{ Auth::user()->isProfessor() ? 'Relatórios da Turma' : 'Relatórios da EBD' }}
                 </h2>
                 <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
-                    Análise de frequência, desempenho das classes, aniversariantes e impressões oficiais
+                    @if(Auth::user()->isProfessor())
+                        Análise de frequência, desempenho e aniversariantes das suas salas vinculadas
+                    @else
+                        Análise de frequência, desempenho das classes, aniversariantes e impressões oficiais
+                    @endif
                 </p>
             </div>
 
