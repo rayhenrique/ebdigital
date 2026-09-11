@@ -31,7 +31,8 @@
         </script>
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css'])
+        @livewireStyles
     </head>
     <body class="font-sans text-slate-900 antialiased min-h-screen bg-slate-50 relative flex flex-col justify-center items-center py-8 px-4 sm:px-6 selection:bg-blue-600 selection:text-white">
         <!-- Subtle Ambient Gradient Glow -->
@@ -61,5 +62,7 @@
                 </a>
             </div>
         </footer>
+
+        @livewireScripts
     </body>
 </html>

@@ -19,7 +19,7 @@
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     <meta name="theme-color" content="#2563eb">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
 </head>
 <body class="font-sans antialiased bg-slate-50 text-slate-800 selection:bg-blue-600 selection:text-white min-h-screen py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
