@@ -242,6 +242,18 @@
                 </svg>
                 <span x-show="!sidebarCollapsed" x-cloak class="truncate">{{ Auth::user()->isProfessor() ? 'Relatórios da Turma' : 'Relatórios da EBD' }}</span>
             </x-sidebar-link>
+
+            <x-sidebar-link :href="route('manual.index')" :active="request()->routeIs('manual.*')" title="Manual de Uso">
+                <!-- Lucide: book-open -->
+                <svg class="w-4.5 h-4.5 shrink-0 {{ request()->routeIs('manual.*') ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                <span x-show="!sidebarCollapsed" x-cloak class="truncate flex items-center justify-between w-full">
+                    <span>Manual de Uso</span>
+                    <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700 ml-1.5">Ajuda</span>
+                </span>
+            </x-sidebar-link>
         </div>
 
         <!-- Grupo 3: Administração Geral (Apenas Admin) -->
@@ -587,6 +599,17 @@
                         <path d="m19 9-5 5-4-4-3 3"/>
                     </svg>
                     <span>{{ Auth::user()->isProfessor() ? 'Relatórios da Turma' : 'Relatórios da EBD' }}</span>
+                </x-sidebar-link>
+
+                <x-sidebar-link :href="route('manual.index')" :active="request()->routeIs('manual.*')" @click="mobileSidebarOpen = false">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                    <span class="flex items-center justify-between w-full">
+                        <span>Manual de Uso</span>
+                        <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700">Ajuda</span>
+                    </span>
                 </x-sidebar-link>
             </div>
 

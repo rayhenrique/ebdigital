@@ -95,5 +95,16 @@
 - [x] 14.7 Layout de impressão e estado vazio gracioso para professores sem turmas vinculadas.
 - [x] 14.8 Suíte completa de testes automatizados (`ReportsTest`) cobrindo acesso, isolamento de turmas, cálculo de métricas e estados vazios (77 testes passando no projeto).
 
+## Fase 15: Módulo Manual de Uso Didático e Interativo
+- [x] 15.1 Controlador `ManualController` com rota `/manual` registrada com middleware de autenticação (`auth`), acessível para todos os perfis (Admin, Secretário e Professor).
+- [x] 15.2 Integração na navegação global do sistema (sidebar desktop e gaveta mobile) com ícone de livro e badge indicativa de "Ajuda".
+- [x] 15.3 Interface interativa em Blade + Alpine.js com abas por perfil (Visão Geral, Professor, Secretário/Superintendente, Pastor/Admin Geral, Instalação PWA no Celular, FAQ com acordeão).
+- [x] 15.4 Mecanismo de busca e filtro em tempo real integrado para localização rápida de tópicos (ex: chamada, ofertas, bíblias, relatórios, tenant switcher, pwa).
+- [x] 15.5 Guias passo a passo ilustrados e detalhados cobrindo todos os módulos do sistema (Dashboard Consolidado, Chamadas, Matrícula Rápida, Modal de Confirmação, Alunos, Classes, Usuários, Congregações e Relatórios com impressão).
+- [x] 15.6 Passo a passo ilustrado de instalação como App (PWA) para Android (Google Chrome) e iOS (Safari).
+- [x] 15.7 Suporte a impressão limpa (`window.print()` e estilos `print:` no Tailwind) com cabeçalho institucional da Assembleia de Deus.
+- [x] 15.8 Suíte completa de testes automatizados (`ManualTest`) cobrindo redirecionamento de guests, acesso de todos os perfis, e presença das seções e FAQ (82 testes passando).
+
+
 
 
