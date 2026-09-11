@@ -112,7 +112,8 @@
                         type="button" 
                         @click="activeRole = 'all'" 
                         class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition min-h-[40px] cursor-pointer flex items-center gap-1.5"
-                        :class="activeRole === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                        :class="activeRole === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                        :style="activeRole === 'all' ? 'background-color: #0f172a; color: #ffffff;' : 'background-color: #f1f5f9; color: #334155;'"
                     >
                         <span>🌟</span>
                         <span>Visão Completa</span>
@@ -122,12 +123,19 @@
                         type="button" 
                         @click="activeRole = 'professor'" 
                         class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition min-h-[40px] cursor-pointer flex items-center gap-1.5"
-                        :class="activeRole === 'professor' ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                        :class="activeRole === 'professor' ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                        :style="activeRole === 'professor' ? 'background-color: #059669; color: #ffffff;' : 'background-color: #f1f5f9; color: #334155;'"
                     >
                         <span>📖</span>
                         <span>Guia do Professor</span>
                         @if(Auth::user()->isProfessor())
-                            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-white/25 text-white ml-1">Seu Perfil</span>
+                            <span 
+                                class="text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1 transition"
+                                :class="activeRole === 'professor' ? 'bg-white/25 text-white' : 'bg-emerald-100 text-emerald-800 border border-emerald-300/60'"
+                                :style="activeRole === 'professor' ? 'background-color: rgba(255,255,255,0.25); color: #ffffff;' : 'background-color: #d1fae5; color: #065f46;'"
+                            >
+                                Seu Perfil
+                            </span>
                         @endif
                     </button>
 
@@ -135,12 +143,19 @@
                         type="button" 
                         @click="activeRole = 'secretario'" 
                         class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition min-h-[40px] cursor-pointer flex items-center gap-1.5"
-                        :class="activeRole === 'secretario' ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                        :class="activeRole === 'secretario' ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                        :style="activeRole === 'secretario' ? 'background-color: #2563eb; color: #ffffff;' : 'background-color: #f1f5f9; color: #334155;'"
                     >
                         <span>📋</span>
                         <span>Superintendente / Secretaria</span>
                         @if(Auth::user()->isSecretario())
-                            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-white/25 text-white ml-1">Seu Perfil</span>
+                            <span 
+                                class="text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1 transition"
+                                :class="activeRole === 'secretario' ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-800 border border-blue-300/60'"
+                                :style="activeRole === 'secretario' ? 'background-color: rgba(255,255,255,0.25); color: #ffffff;' : 'background-color: #dbeafe; color: #1e40af;'"
+                            >
+                                Seu Perfil
+                            </span>
                         @endif
                     </button>
 
@@ -148,12 +163,19 @@
                         type="button" 
                         @click="activeRole = 'admin'" 
                         class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition min-h-[40px] cursor-pointer flex items-center gap-1.5"
-                        :class="activeRole === 'admin' ? 'bg-purple-700 text-white shadow-sm shadow-purple-700/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                        :class="activeRole === 'admin' ? 'bg-purple-700 text-white shadow-sm shadow-purple-700/20' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                        :style="activeRole === 'admin' ? 'background-color: #7e22ce; color: #ffffff;' : 'background-color: #f1f5f9; color: #334155;'"
                     >
                         <span>👑</span>
                         <span>Pastor / Admin Geral</span>
                         @if(Auth::user()->isAdmin())
-                            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-white/25 text-white ml-1">Seu Perfil</span>
+                            <span 
+                                class="text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1 transition"
+                                :class="activeRole === 'admin' ? 'bg-white/25 text-white' : 'bg-purple-100 text-purple-800 border border-purple-300/60'"
+                                :style="activeRole === 'admin' ? 'background-color: rgba(255,255,255,0.25); color: #ffffff;' : 'background-color: #f3e8ff; color: #6b21a8;'"
+                            >
+                                Seu Perfil
+                            </span>
                         @endif
                     </button>
 
@@ -161,7 +183,8 @@
                         type="button" 
                         @click="activeRole = 'pwa'" 
                         class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition min-h-[40px] cursor-pointer flex items-center gap-1.5"
-                        :class="activeRole === 'pwa' ? 'bg-amber-600 text-white shadow-sm shadow-amber-600/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                        :class="activeRole === 'pwa' ? 'bg-amber-600 text-white shadow-sm shadow-amber-600/20' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                        :style="activeRole === 'pwa' ? 'background-color: #d97706; color: #ffffff;' : 'background-color: #f1f5f9; color: #334155;'"
                     >
                         <span>📱</span>
                         <span>Instalação no Celular</span>
@@ -171,7 +194,8 @@
                         type="button" 
                         @click="activeRole = 'faq'" 
                         class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition min-h-[40px] cursor-pointer flex items-center gap-1.5"
-                        :class="activeRole === 'faq' ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                        :class="activeRole === 'faq' ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                        :style="activeRole === 'faq' ? 'background-color: #4f46e5; color: #ffffff;' : 'background-color: #f1f5f9; color: #334155;'"
                     >
                         <span>❓</span>
                         <span>Perguntas Frequentes (FAQ)</span>
