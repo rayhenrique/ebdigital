@@ -73,5 +73,25 @@ class ManualTest extends TestCase
         $response->assertSee('Como Instalar no Android');
         $response->assertSee('Como Instalar no iPhone');
         $response->assertSee('Perguntas Frequentes');
+        $response->assertSee('Baixar manual.pdf');
+    }
+
+    public function test_authenticated_user_can_download_manual_pdf(): void
+    {
+        $user = User::factory()->create([
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('manual.download'));
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+        $this->assertStringContainsString('Manual_EBD_Digital.pdf', (string) $response->headers->get('content-disposition'));
+    }
+
+    public function test_guest_cannot_download_manual_pdf(): void
+    {
+        $response = $this->get(route('manual.download'));
+        $response->assertRedirect(route('login'));
     }
 }
+

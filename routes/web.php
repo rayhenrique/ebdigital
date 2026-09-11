@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
 
     // Manual de Uso Didático e Interativo (Todos os Usuários)
     Route::get('/manual', [ManualController::class, 'index'])->name('manual.index');
+    Route::get('/manual/download', [ManualController::class, 'download'])->name('manual.download');
 
     // Módulo de Chamada e Gestão de Alunos (Professores, Secretários e Admin)
     Route::middleware('role:admin,secretario,professor')->group(function () {

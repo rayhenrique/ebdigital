@@ -103,7 +103,8 @@
 - [x] 15.5 Guias passo a passo ilustrados e detalhados cobrindo todos os módulos do sistema (Dashboard Consolidado, Chamadas, Matrícula Rápida, Modal de Confirmação, Alunos, Classes, Usuários, Congregações e Relatórios com impressão).
 - [x] 15.6 Passo a passo ilustrado de instalação como App (PWA) para Android (Google Chrome) e iOS (Safari).
 - [x] 15.7 Suporte a impressão limpa (`window.print()` e estilos `print:` no Tailwind) com cabeçalho institucional da Assembleia de Deus.
-- [x] 15.8 Suíte completa de testes automatizados (`ManualTest`) cobrindo redirecionamento de guests, acesso de todos os perfis, e presença das seções e FAQ (82 testes passando).
+- [x] 15.8 Suíte completa de testes automatizados (`ManualTest`) cobrindo redirecionamento de guests, acesso de todos os perfis, e presença das seções e FAQ (84 testes passando).
+- [x] 15.9 Geração do documento oficial `manual.pdf` institucional da EBD e inclusão da rota `/manual/download` e card destacado para download na seção final do módulo.
 
 
 
