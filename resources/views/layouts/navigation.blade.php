@@ -332,6 +332,28 @@
             </button>
         </form>
 
+        <!-- Botão Novidades / Versão Atual (Desktop Sidebar) -->
+        <button 
+            type="button" 
+            @click="$dispatch('open-whats-new')" 
+            title="Novidades da Versão {{ config('changelog.current_version', '1.0.0') }}"
+            class="flex items-center rounded-xl text-slate-500 hover:text-blue-600 hover:bg-blue-50/70 transition-all cursor-pointer group"
+            :class="sidebarCollapsed ? 'justify-center p-2.5 w-11 h-11 mx-auto' : 'gap-3 px-3.5 py-2 text-xs font-semibold w-full'"
+        >
+            <svg class="w-4.5 h-4.5 shrink-0 text-blue-600 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+            </svg>
+            <div x-show="!sidebarCollapsed" x-cloak class="flex items-center justify-between w-full min-w-0">
+                <span class="truncate">Novidades</span>
+                <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                    v{{ config('changelog.current_version', '1.0.0') }}
+                </span>
+            </div>
+        </button>
+
         <!-- Link de Política de Privacidade (Google Play Requirement) -->
         <a 
             href="{{ route('privacy.policy') }}" 
@@ -678,6 +700,26 @@
                     <span>Sair do Sistema</span>
                 </button>
             </form>
+
+            <!-- Botão Novidades Mobile Drawer -->
+            <button 
+                type="button" 
+                @click="mobileSidebarOpen = false; $dispatch('open-whats-new')" 
+                class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all cursor-pointer"
+            >
+                <div class="flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-blue-600 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                        <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                        <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                    </svg>
+                    <span>Novidades do Sistema</span>
+                </div>
+                <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                    v{{ config('changelog.current_version', '1.0.0') }}
+                </span>
+            </button>
 
             <!-- Link Política de Privacidade (Google Play Requirement) -->
             <a 

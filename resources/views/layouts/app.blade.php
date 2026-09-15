@@ -103,6 +103,10 @@
                 </main>
             </div>
         </div>
+
+        <!-- Modal Global de Novidades e Controle de Versões -->
+        <livewire:whats-new-modal />
+
         @livewireScripts
 
         <!-- Script de Controle da Barra de Progresso em Navegações wire:navigate -->

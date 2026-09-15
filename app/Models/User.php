@@ -20,6 +20,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $password
  * @property UserRole $role
  * @property bool $is_active
+ * @property string|null $last_seen_version
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -44,6 +45,7 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'last_seen_version',
     ];
 
     /**

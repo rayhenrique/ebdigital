@@ -106,6 +106,12 @@
 - [x] 15.8 Suíte completa de testes automatizados (`ManualTest`) cobrindo redirecionamento de guests, acesso de todos os perfis, e presença das seções e FAQ (84 testes passando).
 - [x] 15.9 Geração do documento oficial `manual.pdf` institucional da EBD e inclusão da rota `/manual/download` e card destacado para download na seção final do módulo.
 
-
-
-
+## Fase 16: Módulo de Controle de Versões & Notificação de Novidades (What's New)
+- [x] 16.1 Documento oficial `versoes.md` na raiz do projeto com histórico detalhado e cronológico de todas as versões (v1.0.0 até v1.6.0).
+- [x] 16.2 Arquivo de configuração versionado `config/changelog.php` com definição de versão atual e notas estruturadas por versão (feature, improvement, fix).
+- [x] 16.3 Migration `add_last_seen_version_to_users_table` adicionando a coluna `last_seen_version` na tabela `users`.
+- [x] 16.4 Atualização do model `User` com `$fillable` e documentação de tipo para `last_seen_version`.
+- [x] 16.5 Componente Livewire `WhatsNewModal` com detecção automática no primeiro login pós-atualização, método de dispensa (`dismiss`) com persistência no banco e suporte a navegação no histórico.
+- [x] 16.6 View Blade Mobile-First (`whats-new-modal.blade.php`) com backdrop blur, categorização visual por badges (Novo, Melhoria, Correção) e botão de toque ergonômico (48px+).
+- [x] 16.7 Inclusão global no layout autenticado `layouts/app.blade.php` e botões de acesso rápido com badge da versão na Sidebar Desktop e Gaveta Mobile (`navigation.blade.php`).
+- [x] 16.8 Suíte completa de testes automatizados (`VersionControlTest`) com 100% de sucesso cobrindo exibição no primeiro login, dispensa com persistência, bloqueio quando já visualizado e disparo sob demanda via evento.
