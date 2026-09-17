@@ -56,7 +56,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => 'Esta conta de usuário está desativada. Consulte a administração da EBD.',
+                'email' => 'Esta conta de usuário está desativada ou aguarda aprovação pelo Administrador/Pastor da igreja. Para solicitar liberação, entre em contato pelo WhatsApp (82) 99630-4742.',
             ]);
         }
 

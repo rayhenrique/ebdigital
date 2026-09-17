@@ -30,9 +30,39 @@
         }
     }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Banner de Alerta para Cadastros Aguardando Aprovação -->
+            @if(isset($pendingUsersCount) && $pendingUsersCount > 0)
+                <div class="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-amber-900 leading-tight">
+                                {{ $pendingUsersCount }} {{ $pendingUsersCount === 1 ? 'cadastro aguardando aprovação' : 'cadastros aguardando aprovação' }}
+                            </h3>
+                            <p class="text-xs text-amber-700 mt-0.5">
+                                Existem novas solicitações de auto-cadastro pendentes de liberação pelo Pastor ou Administrador.
+                            </p>
+                        </div>
+                    </div>
+                    <a 
+                        href="{{ route('admin.users.index', ['status' => 'inactive']) }}" 
+                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm transition shrink-0 min-h-[44px]"
+                    >
+                        <span>Ver Cadastros Pendentes</span>
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </div>
+            @endif
+
             <!-- Filtros -->
             <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm mb-6">
-                <form method="GET" action="{{ route('admin.users.index') }}" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                <form method="GET" action="{{ route('admin.users.index') }}" class="grid grid-cols-1 sm:grid-cols-6 gap-3">
                     <div class="sm:col-span-2">
                         <input 
                             type="text" 
@@ -62,11 +92,18 @@
                             @endforeach
                         </select>
                     </div>
+                    <div>
+                        <select name="status" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 min-h-[48px] px-3">
+                            <option value="">Todos os Status</option>
+                            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Ativos</option>
+                            <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Aguardando / Inativos</option>
+                        </select>
+                    </div>
                     <div class="flex gap-2">
                         <button type="submit" class="flex-1 px-5 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 min-h-[48px] cursor-pointer">
                             Filtrar
                         </button>
-                        @if(request()->hasAny(['search', 'role', 'congregation_id']))
+                        @if(request()->hasAny(['search', 'role', 'congregation_id', 'status']))
                             <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200 flex items-center justify-center min-h-[48px]">
                                 Limpar
                             </a>
@@ -86,8 +123,8 @@
                                     <h3 class="font-bold text-slate-850 text-base leading-tight">{{ $u->name }}</h3>
                                     <p class="text-xs text-slate-500 mt-0.5">{{ $u->email }}</p>
                                 </div>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold shrink-0 {{ $u->is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200' }}">
-                                    {{ $u->is_active ? 'Ativo' : 'Inativo' }}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold shrink-0 {{ $u->is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
+                                    {{ $u->is_active ? 'Ativo' : 'Aguardando Aprovação' }}
                                 </span>
                             </div>
 
@@ -96,9 +133,12 @@
                                     {{ $u->role->value === 'admin' ? 'bg-purple-50 text-purple-700 border border-purple-200/80' : ($u->role->value === 'secretario' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80' : 'bg-blue-50 text-blue-700 border border-blue-200/80') }}">
                                     {{ $u->role->label() }}
                                 </span>
+                                @if($u->congregation)
+                                    <span class="text-xs text-slate-500">• {{ $u->congregation->name }}</span>
+                                @endif
                             </div>
 
-                            <!-- Ações Mobile (4 Colunas: Editar, Redefinir Senha, Ativar/Desativar, Excluir) -->
+                            <!-- Ações Mobile (4 Colunas: Editar, Redefinir Senha, Ativar/Aprovar, Excluir) -->
                             <div class="grid {{ $u->id !== auth()->id() ? 'grid-cols-4' : 'grid-cols-3' }} gap-1.5 pt-1">
                                 <a 
                                     href="{{ route('admin.users.edit', $u) }}" 
@@ -121,9 +161,9 @@
                                         @method('PATCH')
                                         <button 
                                             type="submit" 
-                                            class="w-full flex items-center justify-center px-1 py-2 rounded-xl text-[11px] font-bold min-h-[44px] {{ $u->is_active ? 'border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}"
+                                            class="w-full flex items-center justify-center px-1 py-2 rounded-xl text-[11px] font-bold min-h-[44px] {{ $u->is_active ? 'border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border border-emerald-300 bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm' }}"
                                         >
-                                            {{ $u->is_active ? 'Desativar' : 'Ativar' }}
+                                            {{ $u->is_active ? 'Desativar' : '✓ Aprovar' }}
                                         </button>
                                     </form>
                                     <form method="POST" action="{{ route('admin.users.destroy', $u) }}" class="w-full" onsubmit="return confirm('Deseja realmente excluir o usuário \'{{ addslashes($u->name) }}\'? Esta ação é irreversível.')">
@@ -188,8 +228,8 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-4 text-center">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $u->is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200' }}">
-                                            {{ $u->is_active ? 'Ativo' : 'Inativo' }}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $u->is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">
+                                            {{ $u->is_active ? 'Ativo' : 'Aguardando Aprovação' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right space-x-1">
@@ -212,8 +252,8 @@
                                             <form method="POST" action="{{ route('admin.users.toggle', $u) }}" class="inline-block">
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="text-xs font-semibold {{ $u->is_active ? 'text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200' : 'text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border-emerald-200' }} px-3 py-1.5 rounded-xl border transition">
-                                                    {{ $u->is_active ? 'Desativar' : 'Ativar' }}
+                                                <button type="submit" class="text-xs font-bold {{ $u->is_active ? 'text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200' : 'text-white bg-emerald-600 hover:bg-emerald-700 border-emerald-600 shadow-sm' }} px-3 py-1.5 rounded-xl border transition cursor-pointer">
+                                                    {{ $u->is_active ? 'Desativar' : '✓ Aprovar Acesso' }}
                                                 </button>
                                             </form>
                                             <form method="POST" action="{{ route('admin.users.destroy', $u) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir o usuário \'{{ addslashes($u->name) }}\'? Esta ação é irreversível.')">
@@ -228,7 +268,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-10 text-center text-slate-400">
+                                    <td colspan="5" class="px-6 py-10 text-center text-slate-400">
                                         Nenhum usuário encontrado com os filtros selecionados.
                                     </td>
                                 </tr>

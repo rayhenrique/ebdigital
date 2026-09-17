@@ -13,7 +13,7 @@ return [
     | novidades automaticamente em seu próximo login ou carregamento de página.
     |
     */
-    'current_version' => '1.6.0',
+    'current_version' => '1.7.0',
 
     /*
     |--------------------------------------------------------------------------
@@ -25,11 +25,36 @@ return [
     |
     */
     'releases' => [
+        '1.7.0' => [
+            'version' => '1.7.0',
+            'date' => '16/09/2026',
+            'title' => 'Auto-Cadastro com Aprovação & Integração WhatsApp',
+            'badge' => 'Versão Atual',
+            'description' => 'Novo fluxo de solicitação de cadastro diretamente na tela de login, com aprovação prévia pelo Administrador/Pastor e agilização via WhatsApp.',
+            'highlights' => [
+                [
+                    'type' => 'feature',
+                    'title' => 'Auto-Cadastro na Tela de Login',
+                    'description' => 'Professores e secretários podem solicitar acesso selecionando sua respectiva congregação.',
+                ],
+                [
+                    'type' => 'feature',
+                    'title' => 'Integração Direta com WhatsApp',
+                    'description' => 'Link oficial com mensagem formatada e dados do usuário para solicitar liberação imediata ao Pastor/Admin.',
+                ],
+                [
+                    'type' => 'improvement',
+                    'title' => 'Painel de Aprovação Rápida',
+                    'description' => 'Alerta visual de cadastros pendentes na gestão de usuários e aprovação em 1 clique.',
+                ],
+            ],
+        ],
+
         '1.6.0' => [
             'version' => '1.6.0',
             'date' => '15/09/2026',
             'title' => 'Controle de Versões & Central de Novidades',
-            'badge' => 'Versão Atual',
+            'badge' => 'Novidades',
             'description' => 'Apresentamos a Central de Novidades da Caderneta EBD! A partir de agora, sempre que novas funções forem publicadas, você será avisado imediatamente em seu primeiro login.',
             'highlights' => [
                 [

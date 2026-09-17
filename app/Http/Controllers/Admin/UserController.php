@@ -47,11 +47,13 @@ class UserController extends Controller
         }
 
         $users = $query->paginate(15)->withQueryString();
+        $pendingUsersCount = User::where('is_active', false)->count();
 
         return view('admin.users.index', [
             'users' => $users,
             'roles' => UserRole::cases(),
             'congregations' => Congregation::active()->orderBy('name')->get(),
+            'pendingUsersCount' => $pendingUsersCount,
         ]);
     }
 

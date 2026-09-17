@@ -115,3 +115,14 @@
 - [x] 16.6 View Blade Mobile-First (`whats-new-modal.blade.php`) com backdrop blur, categorização visual por badges (Novo, Melhoria, Correção) e botão de toque ergonômico (48px+).
 - [x] 16.7 Inclusão global no layout autenticado `layouts/app.blade.php` e botões de acesso rápido com badge da versão na Sidebar Desktop e Gaveta Mobile (`navigation.blade.php`).
 - [x] 16.8 Suíte completa de testes automatizados (`VersionControlTest`) com 100% de sucesso cobrindo exibição no primeiro login, dispensa com persistência, bloqueio quando já visualizado e disparo sob demanda via evento.
+
+## Fase 17: Módulo de Auto-Cadastro com Aprovação & Integração WhatsApp
+- [x] 17.1 Criação do `RegisterRequest` com regras estritas para `name`, `email`, `password`, perfis permitidos (`secretario`, `professor`) e validação de congregação ativa (`congregation_id`).
+- [x] 17.2 Atualização do `RegisteredUserController`: persistência de novos usuários com `is_active = false`, não autenticação automática (`assertGuest`), registro de log de auditoria (`USER_SELF_REGISTERED`) e redirecionamento para `register.success`.
+- [x] 17.3 Implementação da rota pública `register.success` e view `register-success.blade.php` com resumo dos dados cadastrados (sem senha) e botão direto oficial do WhatsApp (+55 82 99630-4742) com mensagem pré-preenchida para solicitação de liberação.
+- [x] 17.4 Aprimoramento da tela de login (`login.blade.php`) com divisor estilizado e botão de acesso rápido para auto-cadastro de professores e secretários (touch-friendly 48px).
+- [x] 17.5 Atualização da tela de auto-cadastro (`register.blade.php`) com a identidade visual da Assembleia de Deus, campos com alternadores de visibilidade de senha e seleção de congregações ativas.
+- [x] 17.6 Mensagem amigável de bloqueio no `LoginRequest` para usuários inativos informando que a conta aguarda aprovação pelo Administrador/Pastor e orientando contato via WhatsApp.
+- [x] 17.7 Painel de aprovação para o Administrador/Pastor (`admin.users.index`): banner de notificação de cadastros pendentes, filtro de status na busca e botão destacado de 1 clique "✓ Aprovar Acesso".
+- [x] 17.8 Suíte completa de testes automatizados no `RegistrationTest` cobrindo renderização, auto-cadastro com retenção, bloqueio de perfil admin, congregações ativas, tela de sucesso com WhatsApp, bloqueio de login pré-aprovação e liberação após aprovação do admin (96 testes passando no total).
+

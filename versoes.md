@@ -13,6 +13,7 @@ Este projeto adota o padrão de Versionamento Semântico ([SemVer](https://semve
 
 | Versão | Data de Lançamento | Principais Destaques |
 | :--- | :---: | :--- |
+| **v1.7.0** | 16/09/2026 | Auto-Cadastro de Professores/Secretaria, Aprovação pelo Pastor e Integração WhatsApp |
 | **v1.6.0** | 15/09/2026 | Controle de Versões, Modal "O que há de novo" no 1º login e `versoes.md` |
 | **v1.5.0** | 12/09/2026 | Módulo Manual Didático Interativo, Busca em Tempo Real e Download do Manual em PDF |
 | **v1.4.0** | 08/09/2026 | Autonomia de Professores, Matrícula Rápida em Sala e Relatórios por Turma |
@@ -24,6 +25,19 @@ Este projeto adota o padrão de Versionamento Semântico ([SemVer](https://semve
 ---
 
 ## Detalhamento das Versões
+
+### [v1.7.0] - 16/09/2026
+#### ✨ Novidades & Funcionalidades
+- **Auto-Cadastro na Tela de Login**: Link e formulário dedicado permitindo que novos professores e secretários solicitem acesso diretamente pela interface pública, escolhendo sua congregação.
+- **Fluxo de Aprovação Obrigatória**: Novos cadastros são registrados com retenção de segurança (`is_active = false`) aguardando liberação do Administrador ou Pastor da igreja antes de poderem entrar.
+- **Integração Direta com WhatsApp**: Tela de confirmação contendo link e mensagem pré-formatada com os dados do usuário para contato direto via WhatsApp (+55 82 99630-4742) para agilização da aprovação.
+- **Painel Administrativo com 1 Clique**: Banner de notificação na Gestão de Usuários indicando cadastros pendentes e botão de ação rápida "✓ Aprovar Acesso".
+
+#### ⚡ Melhorias & Performance
+- Criação de `RegisterRequest` com regras estritas de validação, bloqueio do papel de administrador em auto-cadastros e vinculação a congregações ativas.
+- Mensagem amigável de bloqueio no login orientando usuários inativos a entrarem em contato pelo WhatsApp para liberação de acesso.
+
+---
 
 ### [v1.6.0] - 15/09/2026
 #### ✨ Novidades & Funcionalidades
