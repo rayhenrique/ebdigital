@@ -7,7 +7,7 @@
                         📖 Central de Ajuda & Treinamento
                     </span>
                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">
-                        Versão 2.0 (Multi-Tenant)
+                        Versão 1.7.0 (Multi-Tenant & Auto-Cadastro)
                     </span>
                 </div>
                 <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-display">
@@ -400,6 +400,30 @@
                         </ul>
                     </div>
                 </div>
+
+                <!-- Passo 7: Como Solicitar Acesso (Auto-Cadastro) -->
+                <div class="flex items-start gap-4 pt-2 border-t border-slate-100">
+                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-black text-sm flex items-center justify-center shrink-0 mt-0.5">
+                        7
+                    </div>
+                    <div class="space-y-2 flex-1">
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-bold text-slate-900 text-sm sm:text-base">
+                                Novo Professor na EBD? Como Solicitar Cadastro na Tela de Login
+                            </h4>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-100 text-emerald-800 uppercase">Novo v1.7.0</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Se um novo professor foi designado para lecionar na Escola Dominical, ele não precisa esperar cadastros manuais demorados. Ele mesmo pode solicitar o acesso diretamente pelo celular:
+                        </p>
+                        <ol class="list-decimal list-inside text-xs sm:text-sm text-slate-600 space-y-1 pl-2">
+                            <li>Na tela de login, toque no botão <strong>"Solicitar Cadastro (Professores e Secretaria)"</strong>.</li>
+                            <li>Preencha Nome Completo, E-mail, crie uma senha segura, selecione o perfil <strong>"Professor"</strong> e escolha a sua <strong>Congregação</strong>.</li>
+                            <li>Ao finalizar o envio, toque no botão verde <strong>"Liberar pelo WhatsApp"</strong>. O sistema abrirá uma mensagem pronta no WhatsApp (+55 82 99630-4742) com seus dados para o Pastor/Administrador aprovar seu cadastro.</li>
+                            <li>Assim que o Pastor aprovar, seu acesso estará liberado imediatamente!</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -544,6 +568,29 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- 6. Vinculação de Professores Cadastrados -->
+                <div class="flex items-start gap-4 pt-2 border-t border-slate-100">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-black text-sm flex items-center justify-center shrink-0 mt-0.5">
+                        6
+                    </div>
+                    <div class="space-y-2 flex-1">
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-bold text-slate-900 text-sm sm:text-base">
+                                Vinculando Professores Auto-Cadastrados às Suas Classes
+                            </h4>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-blue-100 text-blue-800 uppercase">Novo v1.7.0</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Quando o Pastor ou Administrador aprova um novo professor para sua congregação, a Secretaria deve vinculá-lo à sala correspondente:
+                        </p>
+                        <ul class="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1 pl-2">
+                            <li>Acesse o menu <strong>"Classes"</strong> e clique em <strong>"Editar"</strong> na turma desejada (ex: Classe Jovens).</li>
+                            <li>Na lista de professores, marque a caixa do novo professor aprovado e clique em <strong>"Salvar"</strong>.</li>
+                            <li>Imediatamente o professor passa a ver a classe em seu celular e poderá lançar chamadas e acompanhar os alunos.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -669,6 +716,44 @@
                             No menu <strong>"Logs de Auditoria"</strong>, a liderança dispõe de transparência total:
                             toda inserção ou alteração de chamada, oferta ou exclusão registra o autor, data, hora, IP de origem e os valores antes e depois da alteração. O sistema possui expurgo automático programado para retenção de segurança de 30 dias.
                         </p>
+                    </div>
+                </div>
+
+                <!-- 5. Aprovação de Cadastros e WhatsApp -->
+                <div class="flex items-start gap-4 pt-2 border-t border-slate-100">
+                    <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-800 font-black text-sm flex items-center justify-center shrink-0 mt-0.5">
+                        5
+                    </div>
+                    <div class="space-y-2 flex-1">
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-bold text-slate-900 text-sm sm:text-base">
+                                Fluxo de Aprovação de Cadastros & Agilização via WhatsApp
+                            </h4>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-purple-100 text-purple-800 uppercase">Novo v1.7.0</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Por segurança eclesiástica, todo auto-cadastro realizado na tela de login permanece com status <strong>inativo</strong> (bloqueado para acesso) até ser aprovado pelo Pastor ou Administrador:
+                        </p>
+                        <div class="p-4 rounded-xl bg-purple-50/70 border border-purple-200 text-xs sm:text-sm text-purple-950 space-y-2.5">
+                            <div class="flex items-start gap-2">
+                                <span class="text-base">📲</span>
+                                <div>
+                                    <strong>Recebimento no WhatsApp:</strong> O novo obreiro envia uma mensagem padronizada no WhatsApp (+55 82 99630-4742) com Nome, E-mail, Perfil e Congregação solicitando liberação.
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-base">⚠️</span>
+                                <div>
+                                    <strong>Alerta de Pendências:</strong> No menu <strong>"Usuários"</strong>, um banner amarelo no topo avisa: <em>"Há X cadastros aguardando aprovação"</em>, com botão de atalho <em>"Ver Cadastros Pendentes"</em>.
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-base">⚡</span>
+                                <div>
+                                    <strong>Aprovação em 1 Clique:</strong> Basta clicar no botão verde destacado <strong>"✓ Aprovar Acesso"</strong> no card ou na tabela do usuário. A conta é ativada instantaneamente com registro em auditoria.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -839,6 +924,51 @@
                     </button>
                     <div x-show="openFaq === 6" x-cloak class="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed pl-2 border-l-2 border-blue-500">
                         Na aba <strong>"Aniversariantes"</strong> dos Relatórios, selecione o mês atual. Ao lado de cada aluno com telefone cadastrado, existe um botão verde <strong>"Parabenizar (WhatsApp)"</strong>. Clicar nele abre o WhatsApp no celular com uma mensagem bíblica de parabéns já pronta, precisando apenas tocar em enviar!
+                    </div>
+                </div>
+
+                <!-- FAQ 7 -->
+                <div class="py-3" x-show="matches('novo professor secretario solicitar cadastro autocadastro criar conta')">
+                    <button 
+                        type="button" 
+                        @click="toggleFaq(7)" 
+                        class="w-full flex items-center justify-between text-left font-bold text-sm sm:text-base text-slate-850 hover:text-blue-600 transition cursor-pointer"
+                    >
+                        <span>7. Um novo professor ou secretário precisa de acesso. Como ele deve se cadastrar?</span>
+                        <span class="text-slate-400 font-normal text-lg" x-text="openFaq === 7 ? '−' : '+'"></span>
+                    </button>
+                    <div x-show="openFaq === 7" x-cloak class="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed pl-2 border-l-2 border-blue-500">
+                        Ele deve acessar a tela de login do sistema e clicar em <strong>"Solicitar Cadastro (Professores e Secretaria)"</strong>. Ele preenche seu nome, e-mail, senha, seleciona o perfil desejado e sua congregação. Após enviar, ele pode clicar em <strong>"Liberar pelo WhatsApp"</strong> para enviar uma mensagem ao Pastor/Admin solicitando a aprovação imediata.
+                    </div>
+                </div>
+
+                <!-- FAQ 8 -->
+                <div class="py-3" x-show="matches('pastor aprovar cadastro liberar acesso usuario inativo')">
+                    <button 
+                        type="button" 
+                        @click="toggleFaq(8)" 
+                        class="w-full flex items-center justify-between text-left font-bold text-sm sm:text-base text-slate-850 hover:text-blue-600 transition cursor-pointer"
+                    >
+                        <span>8. Como o Pastor ou Administrador aprova um cadastro solicitado?</span>
+                        <span class="text-slate-400 font-normal text-lg" x-text="openFaq === 8 ? '−' : '+'"></span>
+                    </button>
+                    <div x-show="openFaq === 8" x-cloak class="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed pl-2 border-l-2 border-blue-500">
+                        O Pastor/Admin acessa o menu <strong>"Usuários"</strong>. Um banner no topo indicará se há solicitações pendentes. Basta localizar o novo usuário e clicar no botão verde <strong>"✓ Aprovar Acesso"</strong>. A conta é ativada no mesmo instante.
+                    </div>
+                </div>
+
+                <!-- FAQ 9 -->
+                <div class="py-3" x-show="matches('novidades atualizacoes versao o que ha de novo changelog')">
+                    <button 
+                        type="button" 
+                        @click="toggleFaq(9)" 
+                        class="w-full flex items-center justify-between text-left font-bold text-sm sm:text-base text-slate-850 hover:text-blue-600 transition cursor-pointer"
+                    >
+                        <span>9. Onde posso consultar as novas funcionalidades e atualizações do sistema?</span>
+                        <span class="text-slate-400 font-normal text-lg" x-text="openFaq === 9 ? '−' : '+'"></span>
+                    </button>
+                    <div x-show="openFaq === 9" x-cloak class="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed pl-2 border-l-2 border-blue-500">
+                        Sempre que o sistema recebe melhorias, uma janela de novidades é exibida automaticamente no seu primeiro login. Você também pode consultar o histórico de versões a qualquer momento clicando no botão <strong>"Novidades"</strong> na barra lateral ou na gaveta mobile.
                     </div>
                 </div>
             </div>
