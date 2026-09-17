@@ -13,7 +13,7 @@ return [
     | novidades automaticamente em seu próximo login ou carregamento de página.
     |
     */
-    'current_version' => '1.7.0',
+    'current_version' => '1.8.0',
 
     /*
     |--------------------------------------------------------------------------
@@ -25,11 +25,35 @@ return [
     |
     */
     'releases' => [
+        '1.8.0' => [
+            'version' => '1.8.0',
+            'date' => '17/09/2026',
+            'title' => 'Central de Notificações, Aniversariantes & Cuidado Pastoral',
+            'badge' => 'Versão Atual',
+            'description' => 'Lembretes automáticos no Dashboard alertando professores sobre aniversariantes da semana e alunos com 3+ faltas seguidas, com botões de 1 clique para WhatsApp.',
+            'highlights' => [
+                [
+                    'type' => 'feature',
+                    'title' => 'Lembretes Automáticos no Dashboard',
+                    'description' => 'Painel destacado no topo da tela inicial com os aniversariantes e alunos faltosos da turma, sem precisar vasculhar relatórios manualmente.',
+                ],
+                [
+                    'type' => 'feature',
+                    'title' => 'Ações Rápidas via WhatsApp (wa.me)',
+                    'description' => 'Botões de 1 clique com mensagens pré-formatadas cristãs e acolhedoras para envio direto pelo WhatsApp do próprio professor.',
+                ],
+                [
+                    'type' => 'improvement',
+                    'title' => 'Sino de Notificações Global',
+                    'description' => 'Contador dinâmico de pendências no topo do aplicativo e menu lateral com acesso direto aos lembretes.',
+                ],
+            ],
+        ],
         '1.7.0' => [
             'version' => '1.7.0',
             'date' => '16/09/2026',
             'title' => 'Auto-Cadastro com Aprovação & Integração WhatsApp',
-            'badge' => 'Versão Atual',
+            'badge' => 'Versão Anterior',
             'description' => 'Novo fluxo de solicitação de cadastro diretamente na tela de login, com aprovação prévia pelo Administrador/Pastor e agilização via WhatsApp.',
             'highlights' => [
                 [

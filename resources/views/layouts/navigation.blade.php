@@ -96,6 +96,9 @@
             $availableCongregations = $tenantService->getAvailableCongregations();
             $isAllCongregations = $tenantService->isAllCongregations();
             $activeCongregationId = $tenantService->getCongregationId();
+            $notificationService = app(\App\Services\TeacherNotificationService::class);
+            $userNotifications = Auth::check() ? $notificationService->getNotifications(Auth::user()) : null;
+            $alertsCount = $userNotifications['total_alerts_count'] ?? 0;
         @endphp
 
         <!-- Seletor / Indicador de Congregação -->
@@ -189,6 +192,27 @@
                     <path d="m9 14 2 2 4-4"/>
                 </svg>
                 <span x-show="!sidebarCollapsed" x-cloak class="truncate">{{ Auth::user()->isProfessor() ? 'Minhas Chamadas' : 'Lançar Chamadas' }}</span>
+            </x-sidebar-link>
+
+            <x-sidebar-link :href="route('dashboard') . '#lembretes-turma'" :active="false" title="Lembretes & Cuidado Pastoral">
+                <!-- Lucide: bell -->
+                <div class="relative flex items-center justify-center">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-slate-400 group-hover:text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                    </svg>
+                    @if($alertsCount > 0)
+                        <span class="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-rose-500"></span>
+                    @endif
+                </div>
+                <span x-show="!sidebarCollapsed" x-cloak class="truncate flex items-center justify-between w-full">
+                    <span>Lembretes da Turma</span>
+                    @if($alertsCount > 0)
+                        <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 ml-1.5">
+                            {{ $alertsCount }}
+                        </span>
+                    @endif
+                </span>
             </x-sidebar-link>
         </div>
 
@@ -422,6 +446,23 @@
     </div>
 
     <div class="flex items-center gap-2">
+        <!-- Notificações / Alertas da Turma -->
+        <a 
+            href="{{ route('dashboard') }}#lembretes-turma" 
+            wire:navigate
+            class="relative p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
+            title="Lembretes da Turma ({{ $alertsCount }} pendente(s))"
+        >
+            <svg class="w-5 h-5 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+            </svg>
+            @if($alertsCount > 0)
+                <span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-extrabold text-white ring-2 ring-white">
+                    {{ $alertsCount > 9 ? '9+' : $alertsCount }}
+                </span>
+            @endif
+        </a>
+
         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold 
             {{ Auth::user()->isAdmin() ? 'bg-purple-50 text-purple-700 border border-purple-100' : (Auth::user()->isSecretario() ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-blue-50 text-blue-700 border border-blue-100') }}">
             {{ Auth::user()->role?->label() ?? 'Usuário' }}
@@ -574,6 +615,23 @@
                         <path d="m9 14 2 2 4-4"/>
                     </svg>
                     <span>{{ Auth::user()->isProfessor() ? 'Minhas Chamadas' : 'Lançar Chamadas' }}</span>
+                </x-sidebar-link>
+
+                <x-sidebar-link :href="route('dashboard') . '#lembretes-turma'" :active="false" @click="mobileSidebarOpen = false">
+                    <div class="relative flex items-center justify-center">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                        </svg>
+                    </div>
+                    <span class="truncate flex items-center justify-between w-full">
+                        <span>Lembretes da Turma</span>
+                        @if($alertsCount > 0)
+                            <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 ml-1.5">
+                                {{ $alertsCount }}
+                            </span>
+                        @endif
+                    </span>
                 </x-sidebar-link>
             </div>
 

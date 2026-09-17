@@ -64,6 +64,344 @@
         </div>
     </div>
 
+    <!-- =========================================================================
+         CENTRAL DE NOTIFICAÇÕES & LEMBRETES DA TURMA (Aniversariantes & Faltosos)
+         ========================================================================= -->
+    <div 
+        id="lembretes-turma" 
+        x-data="{ 
+            isOpen: true, 
+            activeTab: 'all',
+            showMonthBirthdays: false 
+        }" 
+        class="mb-6"
+    >
+        @if($teacherNotifications['has_alerts'])
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden transition-all">
+                <!-- Cabeçalho da Central de Alertas -->
+                <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-xl shrink-0">
+                            🔔
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h2 class="text-base sm:text-lg font-bold font-display tracking-tight text-white">
+                                    Lembretes & Cuidado Pastoral
+                                </h2>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-extrabold bg-rose-500/20 text-rose-300 border border-rose-400/30">
+                                    {{ $teacherNotifications['total_alerts_count'] }} pendente(s)
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5">
+                                Acompanhe aniversariantes e alunos precisando de visita/contato na sua turma sem precisar abrir relatórios.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Controles: Filtros Rápidos & Recolher -->
+                    <div class="flex items-center gap-1.5 self-end sm:self-auto shrink-0">
+                        <div class="inline-flex rounded-xl bg-white/10 p-1 border border-white/10 text-xs">
+                            <button 
+                                type="button" 
+                                @click="activeTab = 'all'" 
+                                :class="activeTab === 'all' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-200 hover:text-white font-medium'"
+                                class="px-2.5 py-1 rounded-lg transition min-h-[36px] cursor-pointer"
+                            >
+                                Todos ({{ $teacherNotifications['total_alerts_count'] }})
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="activeTab = 'birthdays'" 
+                                :class="activeTab === 'birthdays' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-200 hover:text-white font-medium'"
+                                class="px-2.5 py-1 rounded-lg transition min-h-[36px] cursor-pointer flex items-center gap-1"
+                            >
+                                <span>🎂</span>
+                                <span>{{ count($teacherNotifications['birthdays_week']) }}</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="activeTab = 'absents'" 
+                                :class="activeTab === 'absents' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-200 hover:text-white font-medium'"
+                                class="px-2.5 py-1 rounded-lg transition min-h-[36px] cursor-pointer flex items-center gap-1"
+                            >
+                                <span>⚠️</span>
+                                <span>{{ count($teacherNotifications['chronic_absentees']) }}</span>
+                            </button>
+                        </div>
+
+                        <!-- Botão Minimizar/Expandir -->
+                        <button 
+                            type="button" 
+                            @click="isOpen = !isOpen" 
+                            class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition min-h-[40px] min-w-[40px] flex items-center justify-center cursor-pointer"
+                            :title="isOpen ? 'Recolher lembretes' : 'Expandir lembretes'"
+                        >
+                            <svg class="w-5 h-5 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Conteúdo dos Lembretes (quando aberto) -->
+                <div x-show="isOpen" x-collapse class="p-4 sm:p-5 space-y-5 bg-slate-50/50">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- 1. BLOCO DE ANIVERSARIANTES -->
+                        <div 
+                            x-show="activeTab === 'all' || activeTab === 'birthdays'" 
+                            class="bg-white rounded-2xl p-4 sm:p-5 border border-pink-100 shadow-2xs flex flex-col justify-between"
+                        >
+                            <div>
+                                <div class="flex items-center justify-between pb-3 mb-3 border-b border-pink-50">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center text-base">
+                                            🎂
+                                        </div>
+                                        <div>
+                                            <h3 class="text-sm font-bold text-slate-850">
+                                                Aniversariantes da Turma
+                                            </h3>
+                                            <p class="text-[11px] text-slate-400">
+                                                Hoje e próximos 7 dias
+                                            </p>
+                                        </div>
+                                    </div>
+                                    @if(count($teacherNotifications['birthdays_month']) > count($teacherNotifications['birthdays_week']))
+                                        <button 
+                                            type="button" 
+                                            @click="showMonthBirthdays = !showMonthBirthdays"
+                                            class="text-xs font-semibold text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100/80 px-2.5 py-1 rounded-lg transition min-h-[36px] cursor-pointer"
+                                        >
+                                            <span x-text="showMonthBirthdays ? 'Ver só semana' : 'Ver todo mês ({{ count($teacherNotifications['birthdays_month']) }})'"></span>
+                                        </button>
+                                    @endif
+                                </div>
+
+                                @php
+                                    $birthdaysToShow = count($teacherNotifications['birthdays_week']) > 0 
+                                        ? $teacherNotifications['birthdays_week'] 
+                                        : $teacherNotifications['birthdays_month'];
+                                @endphp
+
+                                <div x-show="!showMonthBirthdays" class="space-y-2.5">
+                                    @forelse($teacherNotifications['birthdays_week'] as $b)
+                                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl border {{ $b['is_today'] ? 'bg-pink-50/70 border-pink-200' : 'bg-slate-50/60 border-slate-100' }} gap-2.5">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <div class="w-8 h-8 rounded-full {{ $b['is_today'] ? 'bg-pink-500 text-white' : 'bg-pink-100 text-pink-700' }} flex items-center justify-center text-xs font-bold shrink-0">
+                                                    {{ $b['is_today'] ? '🎉' : strtoupper(substr($b['name'], 0, 1)) }}
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                                        <span class="text-xs font-bold text-slate-850 truncate max-w-[180px] sm:max-w-[220px]">
+                                                            {{ $b['name'] }}
+                                                        </span>
+                                                        @if($b['is_today'])
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-pink-600 text-white animate-pulse">
+                                                                Hoje! 🎉
+                                                            </span>
+                                                        @elseif($b['days_until'] === 1)
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                                                Amanhã
+                                                            </span>
+                                                        @else
+                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-200 text-slate-700">
+                                                                Em {{ $b['days_until'] }} dias ({{ $b['formatted_day'] }})
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                    <p class="text-[11px] text-slate-400 truncate">
+                                                        {{ $b['class_name'] }} • {{ $b['age'] }} anos
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Ações Rápidas (WhatsApp de 1 clique) -->
+                                            <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                                                @if($b['whatsapp_url'])
+                                                    <a 
+                                                        href="{{ $b['whatsapp_url'] }}" 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition min-h-[40px]"
+                                                        title="Enviar felicitação de aniversário no WhatsApp"
+                                                    >
+                                                        <span>💬</span>
+                                                        <span>Felicitar WhatsApp</span>
+                                                    </a>
+                                                @elseif($b['phone'])
+                                                    <a 
+                                                        href="tel:{{ preg_replace('/\D/', '', $b['phone']) }}" 
+                                                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition min-h-[40px]"
+                                                    >
+                                                        <span>📞</span>
+                                                        <span>Ligar</span>
+                                                    </a>
+                                                @else
+                                                    <span class="text-[11px] text-slate-400 italic">
+                                                        Sem telefone
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-4 text-xs text-slate-400">
+                                            Nenhum aluno fazendo aniversário nos próximos 7 dias.
+                                        </div>
+                                    @endforelse
+                                </div>
+
+                                <!-- Exibição de todos do mês quando ativado -->
+                                <div x-show="showMonthBirthdays" x-cloak class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+                                    @forelse($teacherNotifications['birthdays_month'] as $b)
+                                        <div class="flex items-center justify-between p-2.5 rounded-xl border {{ $b['is_today'] ? 'bg-pink-50 border-pink-200' : 'bg-slate-50/50 border-slate-100' }} gap-2 text-xs">
+                                            <div class="min-w-0 flex items-center gap-2">
+                                                <span class="font-bold text-slate-700 w-11 shrink-0 text-right">{{ $b['formatted_day'] }}</span>
+                                                <div class="truncate">
+                                                    <span class="font-bold text-slate-850 truncate block">{{ $b['name'] }}</span>
+                                                    <span class="text-[10px] text-slate-400 truncate block">{{ $b['class_name'] }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="shrink-0">
+                                                @if($b['whatsapp_url'])
+                                                    <a 
+                                                        href="{{ $b['whatsapp_url'] }}" 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition min-h-[36px]"
+                                                    >
+                                                        <span>💬</span>
+                                                        <span>WhatsApp</span>
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-4 text-xs text-slate-400">
+                                            Nenhum aniversariante registrado neste mês.
+                                        </div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. BLOCO DE FALTOSOS CRÔNICOS (3+ FALTAS SEGUIDAS) -->
+                        <div 
+                            x-show="activeTab === 'all' || activeTab === 'absents'" 
+                            class="bg-white rounded-2xl p-4 sm:p-5 border border-amber-200/80 shadow-2xs flex flex-col justify-between"
+                        >
+                            <div>
+                                <div class="flex items-center justify-between pb-3 mb-3 border-b border-amber-50">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-base">
+                                            ⚠️
+                                        </div>
+                                        <div>
+                                            <h3 class="text-sm font-bold text-slate-850">
+                                                Alunos com 3+ Faltas Consecutivas
+                                            </h3>
+                                            <p class="text-[11px] text-slate-400">
+                                                Atenção pastoral e prevenção de evasão
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
+                                        {{ count($teacherNotifications['chronic_absentees']) }} aluno(s)
+                                    </span>
+                                </div>
+
+                                <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                                    @forelse($teacherNotifications['chronic_absentees'] as $a)
+                                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl border bg-amber-50/40 border-amber-200/70 gap-2.5">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">
+                                                    {{ strtoupper(substr($a['name'], 0, 1)) }}
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                                        <span class="text-xs font-bold text-slate-850 truncate max-w-[180px] sm:max-w-[220px]">
+                                                            {{ $a['name'] }}
+                                                        </span>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200">
+                                                            {{ $a['consecutive_absents'] }} faltas seguidas
+                                                        </span>
+                                                    </div>
+                                                    <p class="text-[11px] text-slate-500 truncate mt-0.5">
+                                                        {{ $a['class_name'] }}
+                                                        @if($a['last_missed_date'])
+                                                            • Última aula: {{ $a['last_missed_date'] }}
+                                                        @endif
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Ações Rápidas (WhatsApp de 1 clique) -->
+                                            <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                                                @if($a['whatsapp_url'])
+                                                    <a 
+                                                        href="{{ $a['whatsapp_url'] }}" 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition min-h-[40px]"
+                                                        title="Enviar mensagem pastoral de acolhimento no WhatsApp"
+                                                    >
+                                                        <span>💬</span>
+                                                        <span>Cuidado Pastoral</span>
+                                                    </a>
+                                                @elseif($a['phone'])
+                                                    <a 
+                                                        href="tel:{{ preg_replace('/\D/', '', $a['phone']) }}" 
+                                                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition min-h-[40px]"
+                                                    >
+                                                        <span>📞</span>
+                                                        <span>Ligar</span>
+                                                    </a>
+                                                @else
+                                                    <span class="text-[11px] text-slate-400 italic">
+                                                        Sem telefone
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-6 text-xs text-slate-400">
+                                            <span class="text-lg block mb-1">🎉</span>
+                                            Nenhum aluno com 3 faltas consecutivas. Frequência regular!
+                                        </div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @else
+            <!-- Estado Positivo: Sem Alertas Ativos -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-2xs flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+                        ✓
+                    </div>
+                    <div>
+                        <h3 class="text-xs sm:text-sm font-bold text-slate-850">
+                            Tudo em dia com a sua turma!
+                        </h3>
+                        <p class="text-[11px] text-slate-400">
+                            Nenhum aniversariante nesta semana e nenhum aluno com 3 faltas consecutivas.
+                        </p>
+                    </div>
+                </div>
+                <a 
+                    href="{{ route('reports.index') }}" 
+                    wire:navigate 
+                    class="text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100/70 px-3 py-1.5 rounded-xl transition shrink-0 min-h-[36px] flex items-center"
+                >
+                    Ver Relatórios
+                </a>
+            </div>
+        @endif
+    </div>
+
     <!-- Grid de Métricas / KPI Cards -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
         <!-- 1. Alunos Presentes -->

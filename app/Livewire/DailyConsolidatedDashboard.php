@@ -119,6 +119,17 @@ class DailyConsolidatedDashboard extends Component
         $overallRate = $totalEnrolled > 0 ? (int) round(($totalPresent / $totalEnrolled) * 100) : 0;
         $totalCongregation = $totalPresent + $totalVisitors;
 
+        $teacherNotifications = $user
+            ? app(\App\Services\TeacherNotificationService::class)->getNotifications($user, $this->selectedDate)
+            : [
+                'birthdays_today' => [],
+                'birthdays_week' => [],
+                'birthdays_month' => [],
+                'chronic_absentees' => [],
+                'total_alerts_count' => 0,
+                'has_alerts' => false,
+            ];
+
         return view('livewire.daily-consolidated-dashboard', [
             'classReports' => $classReports,
             'classesCount' => $classes->count(),
@@ -132,6 +143,7 @@ class DailyConsolidatedDashboard extends Component
             'totalMagazines' => $totalMagazines,
             'totalOfferings' => $totalOfferings,
             'overallRate' => $overallRate,
+            'teacherNotifications' => $teacherNotifications,
         ]);
     }
 }

@@ -13,6 +13,7 @@ Este projeto adota o padrão de Versionamento Semântico ([SemVer](https://semve
 
 | Versão | Data de Lançamento | Principais Destaques |
 | :--- | :---: | :--- |
+| **v1.8.0** | 17/09/2026 | Central de Notificações, Aniversariantes & Cuidado Pastoral no Dashboard |
 | **v1.7.0** | 16/09/2026 | Auto-Cadastro de Professores/Secretaria, Aprovação pelo Pastor e Integração WhatsApp |
 | **v1.6.0** | 15/09/2026 | Controle de Versões, Modal "O que há de novo" no 1º login e `versoes.md` |
 | **v1.5.0** | 12/09/2026 | Módulo Manual Didático Interativo, Busca em Tempo Real e Download do Manual em PDF |
@@ -25,6 +26,15 @@ Este projeto adota o padrão de Versionamento Semântico ([SemVer](https://semve
 ---
 
 ## Detalhamento das Versões
+
+### [v1.8.0] - 17/09/2026
+#### ✨ Novidades & Funcionalidades
+- **Central de Lembretes & Cuidado Pastoral no Dashboard**: Painel interativo exibido no topo do `/dashboard` alertando o professor sobre os alunos aniversariantes e faltosos crônicos (3+ faltas seguidas) de suas turmas atribuídas.
+- **Ações Rápidas de 1 Clique via WhatsApp (`wa.me`)**: Disparo de mensagens pré-formatadas cristãs e acolhedoras para o WhatsApp do aluno ou responsável sem custos e sem necessidade de integrações de terceiros.
+- **Sino de Notificações Global**: Ícone de sino com badge contadora na navegação superior mobile, gaveta lateral e sidebar desktop direcionando para a seção de lembretes.
+- **Isolamento de Turmas**: Professores visualizam estritamente os alunos de suas turmas vinculadas, enquanto secretários e administradores acompanham os alertas da congregação.
+
+---
 
 ### [v1.7.0] - 16/09/2026
 #### ✨ Novidades & Funcionalidades

@@ -126,3 +126,10 @@
 - [x] 17.7 Painel de aprovação para o Administrador/Pastor (`admin.users.index`): banner de notificação de cadastros pendentes, filtro de status na busca e botão destacado de 1 clique "✓ Aprovar Acesso".
 - [x] 17.8 Suíte completa de testes automatizados no `RegistrationTest` cobrindo renderização, auto-cadastro com retenção, bloqueio de perfil admin, congregações ativas, tela de sucesso com WhatsApp, bloqueio de login pré-aprovação e liberação após aprovação do admin (96 testes passando no total).
 
+## Fase 18: Central de Notificações e Lembretes para Professores (Aniversariantes e Faltosos Crônicos)
+- [x] 18.1 Criação do serviço `TeacherNotificationService` com cálculo otimizado e seguro de aniversariantes (hoje, próximos 7 dias e mês) e detecção de faltosos crônicos (3+ faltas consecutivas).
+- [x] 18.2 Geração automática de links rápidos para WhatsApp (`wa.me`) com sanitização de telefone, código DDI 55 e mensagens acolhedoras cristãs personalizadas de felicitação ou cuidado pastoral.
+- [x] 18.3 Atualização de `DailyConsolidatedDashboard`: injeção dos alertas calculados para as turmas autorizadas do usuário logado e isolamento estrito de perfil (professor vê apenas suas turmas).
+- [x] 18.4 Implementação do painel `Central de Lembretes & Cuidado Pastoral` no topo do Dashboard com filtros rápidos (Todos, Aniversariantes, Faltosos), acordeão de expansão e touch targets mobile-first (48px+).
+- [x] 18.5 Adição de indicador global de notificações (ícone de sino com badge contadora) na barra superior mobile, sidebar desktop e gaveta mobile (`navigation.blade.php`).
+- [x] 18.6 Suíte completa de testes automatizados (`TeacherNotificationTest`) cobrindo aniversariantes, faltas consecutivas, links de WhatsApp, isolamento de turmas e estados vazios positivos (100 testes passando no total).
